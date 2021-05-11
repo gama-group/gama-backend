@@ -9,17 +9,36 @@ const connection = new Handle_connections;
 
 app.get('/adiciona', (request, response)=> {
 
-    connection.add_contratante();
+    let email = "bililálilo";
+    let cnpj = "987654321";
+    let nome_fantasia = "Testes sem erro algum";
+    let razao_social = "Testes com erros poucos";
+    let senha = "SegredoSecreto";
 
-    return response.json({message: "Hello World"});
+    connection.add_contratante(email, cnpj, nome_fantasia, razao_social, senha);
+
+    return response.json({message: "Adicionou no banco de dados"});
 
 })
 
 app.get('/encontra', (request, response)=> {
 
-    connection.find_contratante();
+    let email = "teste@gmail.com";
 
-    return response.json({message: "Hello World"});
+    //connection.find_contratante(email);
+    connection.find_all_contratante();
+
+    return response.json({message: "Lista de contratantes"});
+
+})
+
+app.get('/remove', (request, response)=> {
+
+    let email = "bililálilo";
+
+    connection.find_and_delete_contratante(email);
+
+    return response.json({message: "Removeu"});
 
 })
 
