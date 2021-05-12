@@ -15,6 +15,8 @@ app.post('/adiciona', async (request, response)=> {
 
     const { email, cnpj, company_name, trade_name, password } = request.body;
 
+    console.log( email, cnpj, company_name, trade_name, password);
+
     let contractor = new Contractor();
     contractor = await connection.add_contractor(email, cnpj, company_name, trade_name, password);
 
@@ -25,7 +27,7 @@ app.post('/adiciona', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.password
+        "trade name": contractor.trade_name
     }
 
     return response.json(json);
@@ -92,12 +94,10 @@ app.delete('/remove/:email', async (request, response)=> {
 
 })
 
-app.put('/update', async (request, response)=> {
+app.put('/update/:search_email', async (request, response)=> {
     
-    const { search_email } = request.query;
+    const { search_email } = request.params;
     const { email, cnpj, company_name, trade_name, password } = request.body;
-
-    console.log(search_email, email, cnpj, company_name, trade_name, password);
 
     if(typeof(search_email) != "string"){
         return response.status(400).json({"bad request": "email is not a string"});
