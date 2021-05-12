@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Contratante {
+export class Contractor {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -12,17 +12,17 @@ export class Contratante {
     email: string;
 
     @Column()
-    senha: string;
+    password: string;
 
     @Column({
         length: 128
     })
-    razao_social: string;
+    company_name: string;
 
     @Column({
         length: 128
     })
-    nome_fantasia: string;
+    trade_name: string;
 
     @Column({
         length: 14

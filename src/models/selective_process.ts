@@ -9,23 +9,23 @@ export class Processo{
     @Column({
         length: 128
     })
-    titulo: string;
+    title: string;
 
     @Column({
         length: 128
     })
-    descricao: string;
+    description: string;
 
     @Column({
         type: 'date'
     })
-    prazo: string;
+    deadline: string;
 
     @Column({
         length: 64
     })
-    contato: string;
+    method_of_contact: string;
 
     @Column()
-    id_contratante: number;
+    id_contractor: number;
 }

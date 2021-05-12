@@ -1,45 +1,113 @@
-import express from 'express';
+import express, { response } from 'express';
+import { request } from 'http';
 import "reflect-metadata";
 import { createConnection} from 'typeorm';
-import { Handle_connections } from "../src/controller/createConnection"
+import { contractorDAO } from "./controller/contractorDAO"
+import { Contractor } from './models/contractor';
 
 const app = express();
 
-const connection = new Handle_connections;
+app.use(express.json());
 
-app.get('/adiciona', (request, response)=> {
+const connection = new contractorDAO;
 
-    let email = "bililálilo";
-    let cnpj = "987654321";
-    let nome_fantasia = "Testes sem erro algum";
-    let razao_social = "Testes com erros poucos";
-    let senha = "SegredoSecreto";
+app.get('/adiciona', async (request, response)=> {
 
-    connection.add_contratante(email, cnpj, nome_fantasia, razao_social, senha);
+    let email = "teste de remoção";
+    let cnpj = "123456789";
+    let nome_fantasia = "Vai ser removido";
+    let razao_social = "Pode ser removido";
+    let senha = "Ninguém sabe";
 
-    return response.json({message: "Adicionou no banco de dados"});
+    let contractor = new Contractor();
+    contractor = await connection.add_contractor(email, cnpj, nome_fantasia, razao_social, senha);
+
+    const json = {
+        "message": "Foi inserido",
+        "id": contractor.id,
+        "email": contractor.email,
+        "password": contractor.password,
+        "cnpj": contractor.cnpj,
+        "company name": contractor.company_name,
+        "trade name": contractor.password
+    }
+
+    return response.json(json);
 
 })
 
-app.get('/encontra', (request, response)=> {
+app.get('/encontra', async (request, response)=> {
 
-    let email = "teste@gmail.com";
+    let email = "teste de remoção";
 
-    //connection.find_contratante(email);
-    connection.find_all_contratante();
+    let contractor = await connection.find_contractor(email);
 
-    return response.json({message: "Lista de contratantes"});
+    const json = {
+        "message": "Foi encontrado",
+        "email": contractor.email,
+        "password": contractor.password,
+        "cnpj": contractor.cnpj,
+        "company name": contractor.company_name,
+        "trade name": contractor.password
+    }
+
+    return response.json(json);
 
 })
 
-app.get('/remove', (request, response)=> {
+app.get('/encontraTodos', async (request, response)=> {
 
-    let email = "bililálilo";
+    let contractor = await connection.find_all_contractors();
 
-    connection.find_and_delete_contratante(email);
+    console.log(contractor);
 
-    return response.json({message: "Removeu"});
+    return response.json({"message": "Print no terminal"})
 
+})
+
+app.get('/remove', async (request, response)=> {
+
+    let email = "teste de remoção";
+
+    let contractor = await connection.find_and_delete_contractor(email);
+
+    console.log(contractor);
+
+    const json = {
+        "message": "Foi Removido",
+        "email": contractor.email,
+        "password": contractor.password,
+        "cnpj": contractor.cnpj,
+        "company name": contractor.company_name,
+        "trade name": contractor.password
+    }
+
+    return response.json(json);
+
+})
+
+app.get('/update', async (request, response)=> {
+    
+    let id = 17;
+
+    let email = "mudei";
+    let cnpj = "mudei";
+    let nome_fantasia = "mudei";
+    let razao_social = "mudei";
+    let senha = "mudei";
+
+    let contractor = await connection.update_contractor(id, email, cnpj, nome_fantasia, razao_social, senha)
+
+    const json = {
+        "message": "Foi atualizado",
+        "email": contractor.email,
+        "password": contractor.password,
+        "cnpj": contractor.cnpj,
+        "company name": contractor.company_name,
+        "trade name": contractor.password
+    }
+    
+    response.json(json);
 })
 
 app.get('/', (request, response)=> {
