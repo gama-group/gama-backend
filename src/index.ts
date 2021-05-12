@@ -11,16 +11,14 @@ app.use(express.json());
 
 const connection = new contractorDAO;
 
-app.get('/adiciona', async (request, response)=> {
+app.post('/adiciona', async (request, response)=> {
 
-    let email = "teste de remoção";
-    let cnpj = "123456789";
-    let nome_fantasia = "Vai ser removido";
-    let razao_social = "Pode ser removido";
-    let senha = "Ninguém sabe";
+    const { email, cnpj, company_name, trade_name, password } = request.body;
+
+    console.log( email, cnpj, company_name, trade_name, password);
 
     let contractor = new Contractor();
-    contractor = await connection.add_contractor(email, cnpj, nome_fantasia, razao_social, senha);
+    contractor = await connection.add_contractor(email, cnpj, company_name, trade_name, password);
 
     const json = {
         "message": "Foi inserido",
@@ -29,7 +27,7 @@ app.get('/adiciona', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.password
+        "trade name": contractor.trade_name
     }
 
     return response.json(json);
@@ -38,7 +36,11 @@ app.get('/adiciona', async (request, response)=> {
 
 app.get('/encontra', async (request, response)=> {
 
-    let email = "teste de remoção";
+    const { email } = request.query;
+
+    if(typeof(email) != "string"){
+        return response.status(400).json({"bad request": "email is not a string"});
+    }
 
     let contractor = await connection.find_contractor(email);
 
@@ -59,15 +61,21 @@ app.get('/encontraTodos', async (request, response)=> {
 
     let contractor = await connection.find_all_contractors();
 
-    console.log(contractor);
-
-    return response.json({"message": "Print no terminal"})
+    let json = Object.assign({}, contractor);
+    
+    return response.json(json);
 
 })
 
-app.get('/remove', async (request, response)=> {
+app.delete('/remove/:email', async (request, response)=> {
 
-    let email = "teste de remoção";
+    const { email } = request.params;
+
+    console.log(email);
+
+    if(typeof(email) != "string"){
+        return response.status(400).json({"bad request": "email is not a string"});
+    }
 
     let contractor = await connection.find_and_delete_contractor(email);
 
@@ -86,17 +94,17 @@ app.get('/remove', async (request, response)=> {
 
 })
 
-app.get('/update', async (request, response)=> {
+app.put('/update/:search_email', async (request, response)=> {
     
-    let id = 17;
+    const { search_email } = request.params;
+    const { email, cnpj, company_name, trade_name, password } = request.body;
 
-    let email = "mudei";
-    let cnpj = "mudei";
-    let nome_fantasia = "mudei";
-    let razao_social = "mudei";
-    let senha = "mudei";
+    if(typeof(search_email) != "string"){
+        return response.status(400).json({"bad request": "email is not a string"});
+    }
 
-    let contractor = await connection.update_contractor(id, email, cnpj, nome_fantasia, razao_social, senha)
+    let contractor = await connection.update_contractor(search_email, email, cnpj, company_name, trade_name, password)
+
 
     const json = {
         "message": "Foi atualizado",

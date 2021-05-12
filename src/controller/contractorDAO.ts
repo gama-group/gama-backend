@@ -101,7 +101,7 @@ export class contractorDAO{
 
     }
 
-    async update_contractor(key: number,email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
+    async update_contractor(search_email: string,email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
 
         try{
             
@@ -110,7 +110,7 @@ export class contractorDAO{
             let contractor = await connection
                 .getRepository(Contractor)
                 .createQueryBuilder("contractor")
-                .where("contractor.id = :id", {id: key})
+                .where("contractor.email = :email", { email: search_email })
                 .getOne();
 
             contractor.email = email;
@@ -119,7 +119,9 @@ export class contractorDAO{
             contractor.company_name = company_name;
             contractor.password = password;
 
-            await connection.manager.save(contractor);
+            console.log(contractor);
+
+            await connection.manager.getRepository(Contractor).save(contractor);
 
             connection.close();
             
