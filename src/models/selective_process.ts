@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Processo{
+export class Selective_Process{
 
     @PrimaryGeneratedColumn()
     id: number;

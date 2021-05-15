@@ -1,14 +1,14 @@
 import {SourceMap} from "module";
 import "reflect-metadata";
 import { Connection, ConnectionManager, createConnection } from "typeorm";
-import { Processo} from "../models/selective_process";
+import { Selective_Process} from "../models/selective_process";
 
 export class selective_processDAO{
     async add_selective_process(title: string, description: string, deadline: string, method_of_contact: string, id_contractor: number){
 
         try{
             const connection = await createConnection();
-            let process = new Processo();
+            let process = new Selective_Process();
 
             
             process.title = title;
@@ -18,7 +18,7 @@ export class selective_processDAO{
             process.id_contractor = id_contractor;
 
             await connection.manager.save(process);
-            console.log("Processo seletivo salvo");
+            console.log("Selective_Process seletivo salvo");
             connection.close()
             return process;
     
@@ -29,10 +29,10 @@ export class selective_processDAO{
     }
 
 
-    async find_all_selective_processes():Promise<Processo[]>{
+    async find_all_selective_processes():Promise<Selective_Process[]>{
         try{
             const connection = await createConnection();
-            let processes = await connection.manager.find(Processo);
+            let processes = await connection.manager.find(Selective_Process);
             connection.close();
             return processes;
         } catch(e){
@@ -41,10 +41,10 @@ export class selective_processDAO{
         }
     }
 
-    async find_selective_process_by_title(search: string):Promise<Processo>{
+    async find_selective_process_by_title(search: string):Promise<Selective_Process>{
         try{
             const connection = await createConnection();
-            let process = await connection.getRepository(Processo).createQueryBuilder("process").where("process.title = :title", {title: search}).getOne();
+            let process = await connection.getRepository(Selective_Process).createQueryBuilder("process").where("process.title = :title", {title: search}).getOne();
             connection.close();
             return process;
         }catch(e){
@@ -53,10 +53,10 @@ export class selective_processDAO{
         }
     }
 
-    async find_selective_process_by_id(id: number):Promise<Processo>{
+    async find_selective_process_by_id(id: number):Promise<Selective_Process>{
         try{
             const connection = await createConnection();
-            let process = await connection.getRepository(Processo).findOne(id);
+            let process = await connection.getRepository(Selective_Process).findOne(id);
             connection.close();
             return process;
         }catch(e){
@@ -65,10 +65,10 @@ export class selective_processDAO{
         }
     }
 
-    async find_and_delete_selective_process_by_id(id: number):Promise<Processo>{
+    async find_and_delete_selective_process_by_id(id: number):Promise<Selective_Process>{
         try{
             const connection = await createConnection();
-            let process = await connection.getRepository(Processo).findOne(id);
+            let process = await connection.getRepository(Selective_Process).findOne(id);
 
             await connection.manager.remove(process);
 
@@ -85,7 +85,7 @@ export class selective_processDAO{
         try{
             const connection = await createConnection();
 
-            let process = await connection.getRepository(Processo).createQueryBuilder("process").where("process.id = :id", {id: search_id}).getOne();
+            let process = await connection.getRepository(Selective_Process).createQueryBuilder("process").where("process.id = :id", {id: search_id}).getOne();
 
                     
             process.title = title;
@@ -94,8 +94,8 @@ export class selective_processDAO{
             process.method_of_contact = method_of_contact;
             process.id_contractor = id_contractor;
 
-            await connection.manager.getRepository(Processo).save(process);
-            console.log("Processo seletivo salvo");
+            await connection.manager.getRepository(Selective_Process).save(process);
+            console.log("Selective_Process seletivo salvo");
             connection.close()
             return process;
     
