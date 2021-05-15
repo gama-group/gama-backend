@@ -140,6 +140,9 @@ app.post('/addProcess', async(request, response)=> {
 
 app.get('/findProcessByTitle', async(request, response) =>{
     const { title } = request.query;
+    if(typeof(title) != "string"){
+        return response.status(400).json({"bad request": "title is not a string"});
+    } 
     let process = await connection_process.find_selective_process_by_title(title);
     const json = {
         "message": "Foi encontrado",
