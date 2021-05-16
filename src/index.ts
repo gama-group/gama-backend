@@ -121,9 +121,9 @@ app.put('/update/:search_email', async (request, response)=> {
 })
 
 app.post('/addProcess', async(request, response)=> {
-    const {title, description, deadline, method_of_contact, id_contractor } = request.body;
+    const {title, description, deadline, method_of_contact, contractor } = request.body;
     let process = new Selective_Process();
-    process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, id_contractor);
+    process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractor);
     
     const json = {
         "message": "Foi inserido",
