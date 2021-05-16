@@ -1,14 +1,4 @@
 # gama-backend
-### Summary
-[Getting started](#getting-started)
-[Contractor's table](#contractor's-table)
-[adiciona](#```/adiciona````)
-[encontra](#```/encontra````)
-[encontra](#```/encontraPeloId````)
-[adiciona](#```/adiciona````)
-[Selective Process's table](#selective_Process's-table)
-
-
 
 ## :rocket: Getting started
 
@@ -119,6 +109,17 @@ A string of title, a string of description, a string of method_of_contact, and a
 
 ### Returns:
 A json with message confirming insertion and data inserted
+```js
+{
+        "message": "Entry inserted",
+        "id": process.id,
+        "title": process.title,
+        "description": process.description,
+        "method of contact": process.method_of_contact,
+        "deadline": process.deadline,
+        "id contractor": process.id_contractor
+}
+```
 
 # ```/findProcessByTitle```  GET method
 ### Expected:
