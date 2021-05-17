@@ -26,6 +26,9 @@ export class Selective_Process {
     })
     method_of_contact: string;
 
-    @ManyToOne(() => Contractor, contractor => contractor.processes)
+    @ManyToOne(() => Contractor, contractor => contractor.processes,{
+      cascade: true,
+      onDelete: 'CASCADE'
+    })
     contractor: Contractor;
 }
