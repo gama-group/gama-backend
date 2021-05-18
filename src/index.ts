@@ -52,7 +52,7 @@ app.get('/encontra', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.password
+        "trade name": contractor.trade_name
     }
 
     return response.json(json);
@@ -89,7 +89,7 @@ app.delete('/remove/:email', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.password
+        "trade name": contractor.trade_name
     }
 
     return response.json(json);
