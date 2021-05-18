@@ -87,7 +87,7 @@ export class contractorDAO{
                 .getOne();
 
             console.log(contractor)
-    
+
             await connection.manager.remove(contractor);
             
             await connection.close();
@@ -95,7 +95,7 @@ export class contractorDAO{
             return contractor;
 
         }catch(e){
-            console.log("error");
+            console.log("error",e);
             return undefined;
         }
 
