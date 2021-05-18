@@ -3,6 +3,7 @@ import 'reflect-metadata'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
 import { Contractor } from '../models/contractor'
 import { Selective_Process } from '../models/selective_process'
+const bcrypt = require('bcrypt');
 
 export class selective_processDAO {
   async add_selective_process (title: string, description: string, deadline: string, method_of_contact: string, contractor: Contractor) {
@@ -15,6 +16,7 @@ export class selective_processDAO {
       process.deadline = deadline;
       process.method_of_contact = method_of_contact;
       process.contractor = contractor;
+      process.contractor.password = await bcrypt.hash(contractor.password, 10);
 
       await connection.manager.save(process);
 
@@ -125,6 +127,7 @@ export class selective_processDAO {
       process.deadline = deadline;
       process.method_of_contact = method_of_contact;
       process.contractor = contractor;
+      process.contractor.password = await bcrypt.hash(contractor.password, 10);
 
       await connection.manager.getRepository(Selective_Process).save(process);
 

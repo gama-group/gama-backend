@@ -1,22 +1,23 @@
+import { Contractor } from "../models/contractor";
 import { SourceMap } from "module";
 import "reflect-metadata";
 import { Connection, ConnectionManager, createConnection } from "typeorm";
-import { Contractor} from "../models/contractor";
+const bcrypt = require('bcrypt');
 
-export class contractorDAO{
+export class contractorDAO {
 
     async add_contractor(email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
-        
+
         try{
             const connection = await createConnection();
-            
+
             let contractor = new Contractor()
 
             contractor.email = email;
             contractor.cnpj = cnpj;
             contractor.trade_name = trade_name;
             contractor.company_name = company_name;
-            contractor.password = password;
+            contractor.password = await bcrypt.hash(password, 10);
 
             await connection.manager.save(contractor);
 
@@ -32,7 +33,7 @@ export class contractorDAO{
     }
 
     async find_contractor(search: string):Promise<Contractor>{
-        
+
         try{
 
             const connection = await createConnection();
@@ -52,13 +53,13 @@ export class contractorDAO{
             console.log("error");
             return undefined;
         }
-        
+
     }
-    
+
     async find_all_contractors():Promise<Contractor[]>{
-        
+
         try{
-            
+
             const connection = await createConnection();
 
             let contractor = await connection.manager.find(Contractor);
@@ -74,11 +75,11 @@ export class contractorDAO{
     }
 
     async find_and_delete_contractor(search: string):Promise<Contractor>{
-        
+
         try{
 
             const connection = await createConnection();
-            
+
 
             let contractor = await connection
                 .getRepository(Contractor)
@@ -89,7 +90,7 @@ export class contractorDAO{
             console.log(contractor)
 
             await connection.manager.remove(contractor);
-            
+
             connection.close();
 
             return contractor;
@@ -104,7 +105,7 @@ export class contractorDAO{
     async update_contractor(search_email: string,email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
 
         try{
-            
+
             const connection = await createConnection();
 
             let contractor = await connection
@@ -117,14 +118,23 @@ export class contractorDAO{
             contractor.cnpj = cnpj;
             contractor.trade_name = trade_name;
             contractor.company_name = company_name;
-            contractor.password = password;
+
+            console.log("Senha fornecida: " + password);
+            console.log("Senha armazenada: " + contractor.password);
+
+            if(await bcrypt.compare(password, contractor.password)) {
+                console.log("Nova senha é igual a senha anterior, e portanto, a senha não foi alterada.");
+            } else {
+                console.log("E aí, vamo mudar essa senha?");
+                contractor.password = await bcrypt.hash(password, 10);
+            }
 
             console.log(contractor);
 
             await connection.manager.getRepository(Contractor).save(contractor);
 
             connection.close();
-            
+
             return contractor;
 
         }catch(e){
@@ -134,5 +144,3 @@ export class contractorDAO{
 
     }
 }
-
-
