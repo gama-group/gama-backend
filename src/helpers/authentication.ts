@@ -1,5 +1,5 @@
 import * as jwt from "jsonwebtoken";
-
+import { Request, response, Response } from 'express';
 const ACCESS_TOKEN = "12345467890";
 
 interface ITokenUserData {
@@ -14,13 +14,25 @@ export const retrieveDataFromToken = (authorization: string): ITokenUserData | n
     const token = authorization;
     try {
         const data = jwt.verify(token, ACCESS_TOKEN);
-        console.log("Parsed...", data);
         return data as ITokenUserData;
     } catch(e) {
         return null;
     }
 }
 
-const checkUserCredentials = (email: string, password: string) => {
+export const unauthorized = (res: Response, message: string = "Unauthorized") => res.status(401).json({ message });
+export const authMiddleware = (req: Request<any>, res: Response<any>, next) => {
+
+    const { authorization } = req.headers;
+
+    if (!authorization) return unauthorized(res);
     
+    const tokenData = retrieveDataFromToken(authorization);
+    if (!tokenData) return unauthorized(res);
+    res.locals = { 
+        ...res.locals,
+        session: tokenData
+    };
+
+    next();
 }

@@ -4,7 +4,7 @@ import "reflect-metadata";
 import { createConnection} from 'typeorm';
 import { contractorDAO } from "./controller/contractorDAO"
 import { Contractor } from './models/contractor';
-import { genUserToken, retrieveDataFromToken } from './helpers/authentication'
+import { genUserToken, retrieveDataFromToken, authMiddleware, unauthorized } from './helpers/authentication'
 
 const app = express();
 
@@ -28,7 +28,8 @@ app.post('/adiciona', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.trade_name
+        "trade name": contractor.trade_name,
+        "authorization": genUserToken({ id: contractor.id})
     }
 
     return response.json(json);
@@ -68,17 +69,18 @@ app.get('/encontraTodos', async (request, response)=> {
 
 })
 
-app.delete('/remove/:email', async (request, response)=> {
+app.use('/remove', authMiddleware);
+app.delete('/remove/:email', async (request, response) => {
 
     const { email } = request.params;
-
-    console.log(email);
 
     if(typeof(email) != "string"){
         return response.status(400).json({"bad request": "email is not a string"});
     }
 
-    let contractor = await connection.find_and_delete_contractor(email);
+    let contractor = await connection.find_contractor(email);
+    if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response);
+    contractor = await connection.find_and_delete_contractor(email);
 
     console.log(contractor);
 
@@ -88,24 +90,28 @@ app.delete('/remove/:email', async (request, response)=> {
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
-        "trade name": contractor.password
+        "trade name": contractor.password,
     }
 
     return response.json(json);
 
 })
 
+app.use("/update", authMiddleware);
 app.put('/update/:search_email', async (request, response)=> {
     
     const { search_email } = request.params;
+    let contractor = await connection.find_contractor(search_email);
+    if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response);
+
     const { email, cnpj, company_name, trade_name, password } = request.body;
 
     if(typeof(search_email) != "string"){
         return response.status(400).json({"bad request": "email is not a string"});
     }
 
-    let contractor = await connection.update_contractor(search_email, email, cnpj, company_name, trade_name, password)
-
+    console.log( request.body);
+    contractor = await connection.update_contractor(search_email, email, cnpj, company_name, trade_name, password)
 
     const json = {
         "message": "Foi atualizado",
@@ -115,12 +121,11 @@ app.put('/update/:search_email', async (request, response)=> {
         "company name": contractor.company_name,
         "trade name": contractor.password
     }
-    
-    response.json(json);
+
+    return response.json(json);
 })
 
 app.get('/', (request, response)=> {
-
     return response.json({message: "Hello World"});
 
 })
@@ -136,14 +141,8 @@ app.post('/login', async (request, response) => {
     {
         return response.status(403).json({ message: "Invalid username or password."});
     }
-    return response.json({ authorization: genUserToken({ id: 5 })});
-})
 
-app.get('/user/:id', (request, response) => {
-    const { id } = request.params;
-    const { authorization } = request.headers;
-
-    response.json(retrieveDataFromToken(authorization));
+    return response.json({ authorization: genUserToken({ id: contractor.id })});
 })
 
 app.listen(3333);

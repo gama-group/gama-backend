@@ -33,7 +33,7 @@ export class contractorDAO{
 
     async find_contractor(search: string):Promise<Contractor>{
         
-        try{
+        try {
 
             const connection = await createConnection();
 
@@ -103,9 +103,8 @@ export class contractorDAO{
 
     async update_contractor(search_email: string,email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
 
-        try{
-            
-            const connection = await createConnection();
+        const connection = await createConnection();
+        try {
 
             let contractor = await connection
                 .getRepository(Contractor)
@@ -128,7 +127,8 @@ export class contractorDAO{
             return contractor;
 
         }catch(e){
-            console.log("error");
+            console.log("error", e);
+            connection.close();
             return undefined;
         }
 
