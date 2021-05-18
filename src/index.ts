@@ -7,7 +7,10 @@ import { selective_processDAO } from "./controller/selective_processDAO"
 import { Contractor } from './models/contractor';
 import { Selective_Process } from './models/selective_process';
 
+const cors = require('cors');
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
