@@ -110,7 +110,6 @@ app.put('/update/:search_email', async (request, response)=> {
         return response.status(400).json({"bad request": "email is not a string"});
     }
 
-    console.log( request.body);
     contractor = await connection.update_contractor(search_email, email, cnpj, company_name, trade_name, password)
 
     const json = {

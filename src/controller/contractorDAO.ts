@@ -21,7 +21,7 @@ export class contractorDAO{
             await connection.manager.save(contractor);
 
             console.log("Contratante foi salvo");
-            connection.close();
+            await connection.close();
 
             return contractor;
 
@@ -43,13 +43,13 @@ export class contractorDAO{
                 .where("contractor.email = :email", { email: search })
                 .getOne();
 
-            console.log(contractor)
-            connection.close();
+            console.log("Found contractor: ", contractor)
+            await connection.close();
 
-            return contractor
+            return contractor;
 
-        }catch(e){
-            console.log("error");
+        } catch(e) {
+            console.log("Error: Unable to find contractor.", e);
             return undefined;
         }
         
@@ -62,7 +62,7 @@ export class contractorDAO{
             const connection = await createConnection();
 
             let contractor = await connection.manager.find(Contractor);
-            connection.close();
+            await connection.close();
 
             return contractor;
 
@@ -90,7 +90,7 @@ export class contractorDAO{
     
             await connection.manager.remove(contractor);
             
-            connection.close();
+            await connection.close();
 
             return contractor;
 
@@ -103,9 +103,9 @@ export class contractorDAO{
 
     async update_contractor(search_email: string,email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor>{
 
-        const connection = await createConnection();
+        let connection;
         try {
-
+            connection = await createConnection();
             let contractor = await connection
                 .getRepository(Contractor)
                 .createQueryBuilder("contractor")
@@ -118,17 +118,17 @@ export class contractorDAO{
             contractor.company_name = company_name;
             contractor.password = password;
 
-            console.log(contractor);
+            console.log("updating...", contractor);
 
             await connection.manager.getRepository(Contractor).save(contractor);
 
-            connection.close();
+            await connection.close();
             
             return contractor;
 
         }catch(e){
-            console.log("error", e);
-            connection.close();
+            console.log("Error: Unable to update contractor. ", e);
+            await connection.close();
             return undefined;
         }
 
