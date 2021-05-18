@@ -4,6 +4,7 @@ import "reflect-metadata";
 import { createConnection} from 'typeorm';
 import { contractorDAO } from "./controller/contractorDAO"
 import { Contractor } from './models/contractor';
+import { genUserToken, retrieveDataFromToken } from './helpers/authentication'
 
 const app = express();
 
@@ -122,6 +123,27 @@ app.get('/', (request, response)=> {
 
     return response.json({message: "Hello World"});
 
+})
+
+app.post('/login', async (request, response) => {
+    const { email, password } = request.body;
+    if (!email) return response.status(400).json({ message: "Email field is missing." });
+    if (!password) return response.status(400).json({ message: "Password field is missing." });
+
+    const contractor = await connection.find_contractor(email);
+    // TODO: Hash password before comparing it
+    if (!contractor || contractor.password != password) 
+    {
+        return response.status(403).json({ message: "Invalid username or password."});
+    }
+    return response.json({ authorization: genUserToken({ id: 5 })});
+})
+
+app.get('/user/:id', (request, response) => {
+    const { id } = request.params;
+    const { authorization } = request.headers;
+
+    response.json(retrieveDataFromToken(authorization));
 })
 
 app.listen(3333);
