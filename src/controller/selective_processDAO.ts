@@ -22,7 +22,6 @@ export class selective_processDAO {
       process.deadline = deadline
       process.method_of_contact = method_of_contact
       process.contractor = contractor
-      process.contractor.password = await bcrypt.hash(contractor.password, 10)
 
       await connection.manager.save(process)
 
