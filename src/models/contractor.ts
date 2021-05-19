@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
-import { Selective_Process } from './selective_process';
+import { Selective_Process } from './selective_process'
 
 @Entity()
 export class Contractor {
@@ -7,7 +7,8 @@ export class Contractor {
     id: number;
 
     @Column({
-      length: 64
+      length: 64,
+      unique: true
     })
     email: string;
 

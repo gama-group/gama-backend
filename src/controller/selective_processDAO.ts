@@ -3,141 +3,148 @@ import 'reflect-metadata'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
 import { Contractor } from '../models/contractor'
 import { Selective_Process } from '../models/selective_process'
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
 
 export class selective_processDAO {
-  async add_selective_process (title: string, description: string, deadline: string, method_of_contact: string, contractor: Contractor) {
+  async add_selective_process (title: string, description: string, deadline: string, method_of_contact: string, contractorId: string) {
     try {
-      const connection = await createConnection();
-      const process = new Selective_Process();
+      const connection = await createConnection()
+      const process = new Selective_Process()
 
-      process.title = title;
-      process.description = description;
-      process.deadline = deadline;
-      process.method_of_contact = method_of_contact;
-      process.contractor = contractor;
-      process.contractor.password = await bcrypt.hash(contractor.password, 10);
+      const contractor = await connection
+        .getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.id=:id', { id: contractorId })
+        .getOne()
 
-      await connection.manager.save(process);
+      process.title = title
+      process.description = description
+      process.deadline = deadline
+      process.method_of_contact = method_of_contact
+      process.contractor = contractor
+      process.contractor.password = await bcrypt.hash(contractor.password, 10)
 
-      console.log('Selective_Process seletivo salvo');
-      
-      connection.close();
+      await connection.manager.save(process)
 
-      return process;
-    }catch (e) {
-      console.log('error');
-      return undefined;
-    
+      console.log('Selective_Process seletivo salvo')
+
+      await connection.close()
+
+      return process
+    } catch (e) {
+      console.log('error')
+      return undefined
     }
   }
 
-  async find_all_selective_processes ():Promise<Selective_Process[]> {
+  async find_all_selective_processes (): Promise<Selective_Process[]> {
     try {
+      const connection = await createConnection()
 
-      const connection = await createConnection();
+      const processes = await connection.manager.find(Selective_Process)
 
-      const processes = await connection.manager.find(Selective_Process);
-
-      connection.close();
+      await connection.close()
       return processes
     } catch (e) {
-      console.log('error');
-      return undefined;
+      console.log('error')
+      return undefined
     }
   }
 
-  async find_selective_process_by_title (search: string):Promise<Selective_Process> {
+  async find_selective_process_by_title (search: string): Promise<Selective_Process> {
     try {
-      const connection = await createConnection();
+      const connection = await createConnection()
 
       const process = await connection
         .getRepository(Selective_Process)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.title = :title', { title: search })
-        .getOne();
+        .getOne()
 
-      connection.close();
+      await connection.close()
 
       return process
     } catch (e) {
-      console.log('error');
-      return undefined;
+      console.log('error')
+      return undefined
     }
   }
 
-  async find_selective_process_by_id (id: number):Promise<Selective_Process> {
+  async find_selective_process_by_id (id: number): Promise<Selective_Process> {
     try {
-
-      const connection = await createConnection();
+      const connection = await createConnection()
 
       const process = await connection
         .getRepository(Selective_Process)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: id })
-        .getOne();
+        .getOne()
 
-      console.log(id, process);
-      connection.close();
-      
-       return process;
+      console.log(id, process)
+      await connection.close()
 
+      return process
     } catch (e) {
-      console.log('error');
-      return undefined;
+      console.log('Unable to find process', e)
+      return undefined
     }
   }
 
-  async find_and_delete_selective_process_by_id (id: number):Promise<Selective_Process> {
+  async find_and_delete_selective_process_by_id (id: Number):Promise<Selective_Process> {
     try {
-      const connection = await createConnection();
+      const connection = await createConnection()
 
       const process = await connection
         .getRepository(Selective_Process)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: id })
-        .getOne();
+        .getOne()
 
-      await connection.manager.remove(process);
+      await connection.manager.remove(process)
 
-      connection.close();
-      return process;
+      await connection.close()
+      return process
     } catch (e) {
-      console.log('error',e);
-      return undefined;
+      console.log('Unable to find process: ', e)
+      return undefined
     }
   }
 
-  async update_selective_process (search_id: number, title: string, description: string, deadline: string, method_of_contact: string, contractor: Contractor) {
+  async update_selective_process (search_id: number, title: string, description: string, deadline: string, method_of_contact: string, contractorId: string) {
     try {
-      const connection = await createConnection();
+      const connection = await createConnection()
 
       const process = await connection
         .getRepository(Selective_Process)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: search_id })
-        .getOne();
+        .getOne()
 
-      process.title = title;
-      process.description = description;
-      process.deadline = deadline;
-      process.method_of_contact = method_of_contact;
-      process.contractor = contractor;
-      process.contractor.password = await bcrypt.hash(contractor.password, 10);
+      const contractor = await connection
+        .getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.id=:id', { id: contractorId })
+        .getOne()
 
-      await connection.manager.getRepository(Selective_Process).save(process);
+      process.title = title
+      process.description = description
+      process.deadline = deadline
+      process.method_of_contact = method_of_contact
+      process.contractor = contractor
 
-      console.log('Selective_Process seletivo salvo');
+      await connection.manager.getRepository(Selective_Process).save(process)
 
-      connection.close();
-      return process;
+      console.log('Selective_Process seletivo salvo')
+
+      await connection.close()
+      return process
     } catch (e) {
-      console.log('error');
-      return undefined;
+      console.log('error')
+      return undefined
     }
   }
 }
