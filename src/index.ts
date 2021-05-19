@@ -200,7 +200,7 @@ app.delete('/removeProcess/:id', async (request, response) => {
 
   const contractorId = response.locals.session.id
   const contractor = await connection.find_contractor_by_id(contractorId)
-  let process = await connection_process.find_selective_process_by_id(id)
+  let process = await connection_process.find_selective_process_by_id(Number(id))
   if (!contractor || process.contractor.id !== contractor.id) return response.status(404).json({ message: 'Invalid contractor.' })
 
   process = await connection_process.find_and_delete_selective_process_by_id(Number(id))
