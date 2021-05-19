@@ -6,10 +6,12 @@ import { Contractor } from './models/contractor'
 import { genUserToken, authMiddleware, unauthorized } from './helpers/authentication'
 import { Selective_Process } from './models/selective_process'
 import * as bcrypt from 'bcrypt'
+import cors from 'cors'
 
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
