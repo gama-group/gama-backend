@@ -6,27 +6,32 @@ import bcrypt from 'bcrypt'
 
 export class contractorDAO {
   async add_contractor (email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor> {
+    const connection = await createConnection()
+    let contractor
     try {
-      const connection = await createConnection()
+      contractor = await connection.getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.email = :email', { email })
+        .getOne()
 
-      const contractor = new Contractor()
-
-      contractor.email = email
-      contractor.cnpj = cnpj
-      contractor.trade_name = trade_name
-      contractor.company_name = company_name
-      contractor.password = await bcrypt.hash(password, 10)
-
-      await connection.manager.save(contractor)
+      if (!contractor) {
+        contractor = new Contractor()
+        contractor.email = email
+        contractor.cnpj = cnpj
+        contractor.trade_name = trade_name
+        contractor.company_name = company_name
+        contractor.password = await bcrypt.hash(password, 10)
+        await connection.manager.save(contractor)
+      } else contractor = null
 
       console.log('Contratante foi salvo')
-      await connection.close()
-
-      return contractor
     } catch (e) {
-      console.log('error')
-      return undefined
+      console.log('error', e)
+      contractor = null
     }
+
+    await connection.close()
+    return contractor
   }
 
   async find_contractor (search: string):Promise<Contractor> {
