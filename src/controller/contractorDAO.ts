@@ -1,8 +1,8 @@
 import { Contractor } from '../models/contractor'
 import { SourceMap } from 'module'
+import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
-import bcrypt from 'bcrypt'
 
 export class contractorDAO {
   async add_contractor (email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor> {
@@ -10,12 +10,13 @@ export class contractorDAO {
       const connection = await createConnection()
 
       const contractor = new Contractor()
+      const pw_handler = new PasswordHandler();
 
       contractor.email = email
       contractor.cnpj = cnpj
       contractor.trade_name = trade_name
       contractor.company_name = company_name
-      contractor.password = await bcrypt.hash(password, 10)
+      contractor.password = await pw_handler.hash_new_password(password);
 
       await connection.manager.save(contractor)
 
@@ -115,20 +116,12 @@ export class contractorDAO {
         .where('contractor.email = :email', { email: search_email })
         .getOne()
 
+      const pw_handler = new PasswordHandler();
       contractor.email = email
       contractor.cnpj = cnpj
       contractor.trade_name = trade_name
       contractor.company_name = company_name
-
-      console.log('Senha fornecida: ' + password)
-      console.log('Senha armazenada: ' + contractor.password)
-
-      if (await bcrypt.compare(password, contractor.password)) {
-        console.log('Nova senha é igual a senha anterior, e portanto, a senha não foi alterada.')
-      } else {
-        console.log('E aí, vamo mudar essa senha?')
-        contractor.password = await bcrypt.hash(password, 10)
-      }
+      contractor.password = await pw_handler.update_password(contractor.password, password);
 
       console.log('updating...', contractor)
 
