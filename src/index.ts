@@ -129,6 +129,27 @@ app.get('/processo-seletivo/todos', async (request, response) => {
   return response.json(json)
 })
 
+app.get('/processo-seletivo', async (request, response) => {
+  const { id } = request.query
+
+  if (typeof (Number(id)) !== 'number') {
+    return response.status(400).json({ 'bad request': 'id is not a number' })
+  }
+
+  const process = await connection_process.find_selective_process_by_id(Number(id))
+
+  const json = {
+    message: 'Foi encontrado',
+    id: process.id,
+    title: process.title,
+    description: process.description,
+    method_of_contact: process.method_of_contact,
+    deadline: process.deadline,
+    id_contractor: process.contractor.id
+  }
+  return response.json(json)
+})
+
 app.use('/processo-seletivo', authMiddleware)
 app.post('/processo-seletivo', async (request, response) => {
   const { title, description, deadline, method_of_contact } = request.body
@@ -170,35 +191,6 @@ app.get('/findProcessByTitle', async (request, response) => {
 
   return response.json(json)
 })
-
-app.get('/processo-seletivo', async (request, response) => {
-  const { id } = request.query
-
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
-  }
-
-  const process = await connection_process.find_selective_process_by_id(Number(id))
-
-  const json = {
-    message: 'Foi encontrado',
-    id: process.id,
-    title: process.title,
-    description: process.description,
-    method_of_contact: process.method_of_contact,
-    deadline: process.deadline,
-    id_contractor: process.contractor.id
-  }
-  return response.json(json)
-})
-
-// app.get('/processo-seletivo/todos', async (request, response) => {
-//   const process = await connection_process.find_all_selective_processes()
-
-//   const json = Object.assign({}, process)
-
-//   return response.json(json)
-// })
 
 app.use('/processo-seletivo', authMiddleware)
 app.delete('/processo-seletivo/:id', async (request, response) => {
