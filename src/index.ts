@@ -16,7 +16,7 @@ app.use(cors())
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
-app.post('/adiciona', async (request, response) => {
+app.post('/contratante', async (request, response) => {
   const { email, cnpj, company_name, trade_name, password } = request.body
 
   console.log(email, cnpj, company_name, trade_name, password)
@@ -38,7 +38,7 @@ app.post('/adiciona', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/encontra', async (request, response) => {
+app.get('/contratante', async (request, response) => {
   const { email } = request.query
 
   if (typeof (email) !== 'string') {
@@ -59,7 +59,7 @@ app.get('/encontra', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/encontraTodos', async (request, response) => {
+app.get('/contratante/todos', async (request, response) => {
   const contractor = await connection.find_all_contractors()
 
   const json = Object.assign({}, contractor)
@@ -67,8 +67,8 @@ app.get('/encontraTodos', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/remove', authMiddleware)
-app.delete('/remove/:email', async (request, response) => {
+app.use('/contratante', authMiddleware)
+app.delete('/contratante/:email', async (request, response) => {
   const { email } = request.params
 
   if (typeof (email) !== 'string') {
@@ -93,8 +93,8 @@ app.delete('/remove/:email', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/update', authMiddleware)
-app.put('/update/:search_email', async (request, response) => {
+app.use('/contratante', authMiddleware)
+app.put('/contratante/:search_email', async (request, response) => {
   const { search_email } = request.params
   let contractor = await connection.find_contractor(search_email)
   if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
@@ -119,8 +119,16 @@ app.put('/update/:search_email', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/addProcess', authMiddleware)
-app.post('/addProcess', async (request, response) => {
+app.get('/processo-seletivo/todos', async (request, response) => {
+  const process = await connection_process.find_all_selective_processes()
+
+  const json = Object.assign({}, process)
+
+  return response.json(json)
+})
+
+app.use('/processo-seletivo', authMiddleware)
+app.post('/processo-seletivo', async (request, response) => {
   const { title, description, deadline, method_of_contact } = request.body
 
   const contractorId = response.locals.session.id
@@ -161,7 +169,7 @@ app.get('/findProcessByTitle', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/findProcessById', async (request, response) => {
+app.get('/processo-seletivo', async (request, response) => {
   const { id } = request.query
 
   if (typeof (Number(id)) !== 'number') {
@@ -182,16 +190,16 @@ app.get('/findProcessById', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/findAllProcess', async (request, response) => {
-  const process = await connection_process.find_all_selective_processes()
+// app.get('/processo-seletivo/todos', async (request, response) => {
+//   const process = await connection_process.find_all_selective_processes()
 
-  const json = Object.assign({}, process)
+//   const json = Object.assign({}, process)
 
-  return response.json(json)
-})
+//   return response.json(json)
+// })
 
-app.use('/removeProcess', authMiddleware)
-app.delete('/removeProcess/:id', async (request, response) => {
+app.use('/processo-seletivo', authMiddleware)
+app.delete('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
   if (typeof (Number(id)) !== 'number') {
@@ -218,8 +226,8 @@ app.delete('/removeProcess/:id', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/updateProcess', authMiddleware)
-app.put('/updateProcess/:id', async (request, response) => {
+app.use('/processo-seletivo', authMiddleware)
+app.put('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
   const { title, description, deadline, method_of_contact } = request.body
 
