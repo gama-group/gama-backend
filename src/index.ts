@@ -24,8 +24,10 @@ app.post('/adiciona', async (request, response) => {
   let contractor = new Contractor()
   contractor = await connection.add_contractor(email, cnpj, company_name, trade_name, password)
 
+  if (!contractor) return response.status(403).json({ message: 'Unable to create user.' })
+
   const json = {
-    message: 'Foi inserido',
+    message: 'User created',
     id: contractor.id,
     email: contractor.email,
     password: contractor.password,
