@@ -6,15 +6,124 @@ The existing routes for CRUD operations:
 
 # Contractor's table
 
-# ```/adiciona```  POST method
-### Expected:
-A string of email, a string of cnpj, a string of company_name, a string of trade_name and a string of password **in this order** in request's body
+# `/contratante` POST method
+
+Adds a new contractor.
+
+### Expects:
+
+```ts
+{
+        body: {
+                email: string,
+                cpf: string,
+                company_name: string,
+                trade_name: string,
+                password: string
+        }
+}
+```
 
 ### Returns:
-A json with message confirming insertion and data inserted
+
+Success:
+
 ```js
 {
-        "message": "Insertion completed",
+        status: 200,
+        body: {
+                "message": "Insertion completed",
+                "id": contractor.id,
+                "email": contractor.email,
+                "password": contractor.password,
+                "cnpj": contractor.cnpj,
+                "company name": contractor.company_name,
+                "trade name": contractor.trade_name
+        }
+}
+```
+
+Error: Email has already been used by another contractor, or a server internal error
+
+```ts
+{
+        status: 403,
+        body: {
+                message: "Unable to create user."
+        }
+}
+```
+
+# `/contratante/:email` GET method
+
+Retrieves information from a contractor with the specified email.
+
+### Expects:
+
+```ts
+{
+  query: {
+    // The contractor email
+    email: string;
+  }
+}
+```
+
+### Returns:
+
+A json with an successful message and requested contractor's data
+
+Success:
+
+```js
+{
+        status: 200,
+        body: {
+                "message": "Foi encontrado",
+                "email": contractor.email,
+                "password": contractor.password,
+                "cnpj": contractor.cnpj,
+                "company name": contractor.company_name,
+                "trade name": contractor.trade_name
+        }
+}
+```
+
+Error: No contractor found with the specified email
+
+```js
+{
+        status: 404,
+        body: {
+                message: "Contractor not found"
+        }
+}
+```
+
+Error: Email query parameter not specified
+
+```js
+{
+       status: 400,
+       body: {
+               message: "email is not a string"
+       }
+}
+```
+
+# `/encontraPeloId` GET method
+
+### Expected:
+
+A number id in request's query
+
+### Returns:
+
+A json with an successful message and requested contractor's data
+
+```js
+{
+        "message": "Entry found",
         "id": contractor.id,
         "email": contractor.email,
         "password": contractor.password,
@@ -24,57 +133,62 @@ A json with message confirming insertion and data inserted
 }
 ```
 
-# ```/encontra```  GET method
-### Expected:
-An email's string in request's query 
+# `/contratante/todos` GET method
 
-### Returns:
-A json with an successful message and requested contractor's data
-```js
-{
-        "message": "Entry found",
-        "email": contractor.email,
-        "password": contractor.password,
-        "cnpj": contractor.cnpj,
-        "company name": contractor.company_name,
-        "trade name": contractor.trade_name
-}
-```
+### Expects:
 
-# ```/encontraPeloId```  GET method
-### Expected:
-A number id in request's query 
-
-### Returns:
-A json with an successful message and requested contractor's data
-```js
-{
-        "message": "Entry found",
-        "id": contractor.id,
-        "email": contractor.email,
-        "password": contractor.password,
-        "cnpj": contractor.cnpj,
-        "company name": contractor.company_name,
-        "trade name": contractor.trade_name
-}
-```
-
-# ```/encontraTodos```  GET method
-### Expected:
 Nothing
 
 ### Returns:
-A json with all contractor's data in database
 
-# ```/remove/:email```  DELETE method
-### Expected:
-An email's string in request's params 
+A json object with all contractors' data from the database
+
+```ts
+{
+        status: 200,
+        body: {
+                0: {
+                id: contractor.id,
+                email": contractor.email,
+                password: contractor.password,
+                cnpj: contractor.cnpj,
+                company name: contractor.company_name,
+                trade name: contractor.trade_name
+                },
+                1: {
+                        ...
+                },
+                ...
+        }
+}
+```
+
+# `/contratante/:email` DELETE method
+
+## _private_
+
+### Expects:
+
+```ts
+{
+  header: {
+        // The JWT
+        authorization: string
+  },
+  params: {
+    //   The contractor email
+    email: string;
+  }
+}
+```
 
 ### Returns:
+
 A json with an successful message and deleted contractor's data
+
 ```js
 {
-        "message": "Entry removed",
+        "message": "Foi removido.",
         "email": contractor.email,
         "password": contractor.password,
         "cnpj": contractor.cnpj,
@@ -83,32 +197,101 @@ A json with an successful message and deleted contractor's data
 }
 ```
 
-# ```/update/:email```  PUT method
-### Expected:
-An email's string in request's param
-A string of email, a string of cnpj, a string of company_name, a string of trade_name and a string of password **in this order** in request's body 
+Error: Email not supplied or email does not belong to any user
+
+```ts
+{
+        status: 404,
+        body: {
+                message: "Contractor not found"
+        }
+}
+```
+
+Error: User has not supplied a valid authorization token
+
+```ts
+{
+        status: 401,
+        body: {
+                message: "Unauthorized"
+        }
+}
+```
+
+# `/update/:email` PUT method
+
+## **private**
+
+### Expects:
+
+```ts
+{
+        header: {
+                authorization: string,
+        },
+        params: {
+                email: string,
+        },
+        body: {
+                email: string,
+                cnpj: string,
+                company_name: string,
+                trade_name: string,
+                password: string
+        }
+}
+```
 
 ### Returns:
+
 A json with an successful message and updated contractor's data
+
 ```js
 {
-        "message": "Entry updated",
+        "message": "Foi atualizado",
         "email": contractor.email,
         "password": contractor.password,
         "cnpj": contractor.cnpj,
         "company name": contractor.company_name,
         "trade name": contractor.trade_name
+}
+```
+
+Error: No contractor found with specified email
+
+```ts
+{
+        status: 404,
+        body: {
+                message: "Contractor not found"
+        }
+}
+```
+
+Error: User has not supplied a valid authorization token or is trying to update another contractor
+
+```ts
+{
+        status: 401,
+        body: {
+                message: "Unauthorized"
+        }
 }
 ```
 
 # Selective_Process's table
 
-# ```/addProcess```  POST method
+# `/addProcess` POST method
+
 ### Expected:
-A string of title, a string of description, a string of method_of_contact, and a number of id_contractor **in this order** in request's body 
+
+A string of title, a string of description, a string of method_of_contact, and a number of id_contractor **in this order** in request's body
 
 ### Returns:
+
 A json with message confirming insertion and data inserted
+
 ```js
 {
         "message": "Entry inserted",
@@ -121,12 +304,16 @@ A json with message confirming insertion and data inserted
 }
 ```
 
-# ```/findProcessByTitle```  GET method
+# `/findProcessByTitle` GET method
+
 ### Expected:
-An title's string in request's query 
+
+An title's string in request's query
 
 ### Returns:
+
 A json with an successful message and requested selective_process's data
+
 ```js
 {
         "message": "Entry found",
@@ -139,12 +326,16 @@ A json with an successful message and requested selective_process's data
 }
 ```
 
-# ```/findProcessById```  GET method
+# `/findProcessById` GET method
+
 ### Expected:
-A number id in request's query 
+
+A number id in request's query
 
 ### Returns:
+
 A json with an successful message and requested contractor's data
+
 ```js
 {
         "message": "Entry found",
@@ -157,19 +348,26 @@ A json with an successful message and requested contractor's data
 }
 ```
 
-# ```/findAllProcess```  GET method
+# `/findAllProcess` GET method
+
 ### Expected:
+
 Nothing
 
 ### Returns:
+
 A json with all contractor's data in database
 
-# ```/removeProcess/:id```  DELETE method
+# `/removeProcess/:id` DELETE method
+
 ### Expected:
-An id's number in request's params 
+
+An id's number in request's params
 
 ### Returns:
+
 A json with an successful message and deleted contractor's data
+
 ```js
 {
         "message": "Entry deleted",
@@ -182,13 +380,17 @@ A json with an successful message and deleted contractor's data
 }
 ```
 
-# ```/updateProcess/:id```  PUT method
+# `/updateProcess/:id` PUT method
+
 ### Expected:
+
 An id's number in request's param
-A string of title, a string of description, a string of method_of_contact, and a number of id_contractor **in this order** in request's body 
+A string of title, a string of description, a string of method_of_contact, and a number of id_contractor **in this order** in request's body
 
 ### Returns:
+
 A json with an successful message and updated contractor's data
+
 ```js
 {
         "message": "Entry updated",
