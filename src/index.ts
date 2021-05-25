@@ -80,7 +80,8 @@ app.delete('/remove/:email', async (request, response) => {
   }
 
   let contractor = await connection.find_contractor(email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
   contractor = await connection.find_and_delete_contractor(email)
 
   console.log(contractor)
@@ -101,7 +102,8 @@ app.use('/update', authMiddleware)
 app.put('/update/:search_email', async (request, response) => {
   const { search_email } = request.params
   let contractor = await connection.find_contractor(search_email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
 
   const { email, cnpj, company_name, trade_name, password } = request.body
 
