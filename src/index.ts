@@ -8,11 +8,10 @@ import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
 
-const app = express()
+export const app = express()
 
 app.use(express.json())
 app.use(cors())
-
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
@@ -24,8 +23,10 @@ app.post('/adiciona', async (request, response) => {
   let contractor = new Contractor()
   contractor = await connection.add_contractor(email, cnpj, company_name, trade_name, password)
 
+  if (!contractor) return response.status(403).json({ message: 'Unable to create user.' })
+
   const json = {
-    message: 'Foi inserido',
+    message: 'User created',
     id: contractor.id,
     email: contractor.email,
     password: contractor.password,
@@ -47,6 +48,9 @@ app.get('/encontra', async (request, response) => {
 
   const contractor = await connection.find_contractor(email)
 
+  if (contractor === undefined) {
+    return response.status(404).json({ message: 'contractor not found' })
+  }
   const json = {
     message: 'Foi encontrado',
     email: contractor.email,
@@ -76,10 +80,9 @@ app.delete('/remove/:email', async (request, response) => {
   }
 
   let contractor = await connection.find_contractor(email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
   contractor = await connection.find_and_delete_contractor(email)
-
-  console.log(contractor)
 
   const json = {
     message: 'Foi Removido',
@@ -97,7 +100,8 @@ app.use('/update', authMiddleware)
 app.put('/update/:search_email', async (request, response) => {
   const { search_email } = request.params
   let contractor = await connection.find_contractor(search_email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
 
   const { email, cnpj, company_name, trade_name, password } = request.body
 
@@ -148,6 +152,10 @@ app.get('/findProcessByTitle', async (request, response) => {
 
   const process = await connection_process.find_selective_process_by_title(title)
 
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
   const json = {
     message: 'Foi encontrado',
     id: process.id,
@@ -169,6 +177,10 @@ app.get('/findProcessById', async (request, response) => {
   }
 
   const process = await connection_process.find_selective_process_by_id(Number(id))
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
 
   const json = {
     message: 'Foi encontrado',
@@ -231,6 +243,11 @@ app.put('/updateProcess/:id', async (request, response) => {
   const contractor = await connection.find_contractor_by_id(contractorId)
   let process = await connection_process.find_selective_process_by_id(Number(id))
   console.log('Found process', process)
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
   if (!contractor || process.contractor.id !== contractor.id) return response.status(404).json({ message: 'Invalid contractor.' })
 
   process = await connection_process.update_selective_process(Number(id), title, description, deadline, method_of_contact, contractorId)
@@ -268,3 +285,5 @@ app.post('/login', async (request, response) => {
 })
 
 app.listen(3333)
+
+export { app }

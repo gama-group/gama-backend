@@ -6,28 +6,34 @@ import { Connection, ConnectionManager, createConnection } from 'typeorm'
 
 export class contractorDAO {
   async add_contractor (email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor> {
+    const connection = await createConnection()
+    const pw_handler = new PasswordHandler()
+    let contractor
+
     try {
-      const connection = await createConnection()
+      contractor = await connection.getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.email = :email', { email })
+        .getOne()
 
-      const contractor = new Contractor()
-      const pw_handler = new PasswordHandler();
-
-      contractor.email = email
-      contractor.cnpj = cnpj
-      contractor.trade_name = trade_name
-      contractor.company_name = company_name
-      contractor.password = await pw_handler.hash_new_password(password);
-
-      await connection.manager.save(contractor)
+      if (!contractor) {
+        contractor = new Contractor()
+        contractor.email = email
+        contractor.cnpj = cnpj
+        contractor.trade_name = trade_name
+        contractor.company_name = company_name
+        contractor.password = await pw_handler.hash_new_password(password)
+        await connection.manager.save(contractor)
+      } else contractor = null
 
       console.log('Contratante foi salvo')
-      await connection.close()
-
-      return contractor
     } catch (e) {
-      console.log('error')
-      return undefined
+      console.log('error', e)
+      contractor = null
     }
+
+    await connection.close()
+    return contractor
   }
 
   async find_contractor (search: string):Promise<Contractor> {
@@ -116,12 +122,12 @@ export class contractorDAO {
         .where('contractor.email = :email', { email: search_email })
         .getOne()
 
-      const pw_handler = new PasswordHandler();
+      const pw_handler = new PasswordHandler()
       contractor.email = email
       contractor.cnpj = cnpj
       contractor.trade_name = trade_name
       contractor.company_name = company_name
-      contractor.password = await pw_handler.update_password(contractor.password, password);
+      contractor.password = await pw_handler.update_password(contractor.password, password)
 
       console.log('updating...', contractor)
 
