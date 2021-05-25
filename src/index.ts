@@ -8,7 +8,7 @@ import { Selective_Process } from './models/selective_process'
 import * as bcrypt from 'bcrypt'
 import cors from 'cors'
 
-const app = express()
+export const app = express()
 
 app.use(express.json())
 app.use(cors())
@@ -81,8 +81,6 @@ app.delete('/remove/:email', async (request, response) => {
   if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
   contractor = await connection.find_and_delete_contractor(email)
 
-  console.log(contractor)
-
   const json = {
     message: 'Foi Removido',
     email: contractor.email,
@@ -150,6 +148,10 @@ app.get('/findProcessByTitle', async (request, response) => {
 
   const process = await connection_process.find_selective_process_by_title(title)
 
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
   const json = {
     message: 'Foi encontrado',
     id: process.id,
@@ -171,6 +173,10 @@ app.get('/findProcessById', async (request, response) => {
   }
 
   const process = await connection_process.find_selective_process_by_id(Number(id))
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
 
   const json = {
     message: 'Foi encontrado',
@@ -233,6 +239,11 @@ app.put('/updateProcess/:id', async (request, response) => {
   const contractor = await connection.find_contractor_by_id(contractorId)
   let process = await connection_process.find_selective_process_by_id(Number(id))
   console.log('Found process', process)
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
   if (!contractor || process.contractor.id !== contractor.id) return response.status(404).json({ message: 'Invalid contractor.' })
 
   process = await connection_process.update_selective_process(Number(id), title, description, deadline, method_of_contact, contractorId)
