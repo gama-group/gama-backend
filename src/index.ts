@@ -7,6 +7,7 @@ import { genUserToken, authMiddleware, unauthorized } from './helpers/authentica
 import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
+import { LessThan } from 'typeorm'
 
 export const app = express()
 
@@ -177,6 +178,28 @@ app.get('/findProcessByTitle', async (request, response) => {
     method_of_contact: process.method_of_contact,
     deadline: process.deadline,
     id_contractor: process.contractor.id
+  }
+
+  return response.json(json)
+})
+
+app.get('/processo-seletivo/:id', async(request, response) => {
+  const { id } = request.params
+
+  if (typeof (Number(id)) !== 'number') {
+    return response.status(400).json({ 'bad request': 'id is not a number' })
+  }
+
+  let process = await connection_process.find_selective_process_of_contractor_by_id(Number(id))
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
+  const json = Object.assign({}, process)
+
+  for(let i = 0; i<process.length; i++){
+    delete json[i]['contractor']
   }
 
   return response.json(json)
