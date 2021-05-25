@@ -287,4 +287,4 @@ app.post('/login', async (request, response) => {
   return response.json({ authorization: genUserToken({ id: contractor.id }) })
 })
 
-app.listen(3333)
+export const server = app.listen(3333)
