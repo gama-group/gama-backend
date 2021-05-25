@@ -12,7 +12,6 @@ export const app = express()
 
 app.use(express.json())
 app.use(cors())
-
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
@@ -49,6 +48,9 @@ app.get('/contratante', async (request, response) => {
 
   const contractor = await connection.find_contractor(email)
 
+  if (contractor === undefined) {
+    return response.status(404).json({ message: 'contractor not found' })
+  }
   const json = {
     message: 'Foi encontrado',
     email: contractor.email,
@@ -78,7 +80,8 @@ app.delete('/contratante/:email', async (request, response) => {
   }
 
   let contractor = await connection.find_contractor(email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
   contractor = await connection.find_and_delete_contractor(email)
 
   const json = {
@@ -97,7 +100,8 @@ app.use('/contratante', authMiddleware)
 app.put('/contratante/:search_email', async (request, response) => {
   const { search_email } = request.params
   let contractor = await connection.find_contractor(search_email)
-  if (!contractor || contractor.id !== response.locals.session.id) return unauthorized(response)
+  if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
 
   const { email, cnpj, company_name, trade_name, password } = request.body
 
@@ -284,3 +288,5 @@ app.post('/login', async (request, response) => {
 })
 
 app.listen(3333)
+
+export { app }
