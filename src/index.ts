@@ -32,8 +32,8 @@ app.post('/contratante', async (request, response) => {
     email: contractor.email,
     password: contractor.password,
     cnpj: contractor.cnpj,
-    'company name': contractor.company_name,
-    'trade name': contractor.trade_name,
+    company_name: contractor.company_name,
+    trade_name: contractor.trade_name,
     authorization: genUserToken({ id: contractor.id })
   }
 
@@ -183,7 +183,7 @@ app.get('/findProcessByTitle', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/processo-seletivo/:id', async(request, response) => {
+app.get('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
   if (typeof (Number(id)) !== 'number') {
@@ -222,7 +222,7 @@ app.post('/processo-seletivo', async (request, response) => {
     id: process.id,
     title: process.title,
     description: process.description,
-    'method of contact': process.method_of_contact,
+    method_of_contact: process.method_of_contact,
     deadline: process.deadline,
     id_contractor: process.contractor.id
   }

@@ -37,7 +37,7 @@ describe('POST /processo-seletivo', () => {
             id: 1,
             title: 'title',
             description: 'test',
-            'method of contact': 'test',
+            method_of_contact: 'test',
             deadline: 'test',
             id_contractor: 1
         });
@@ -227,6 +227,111 @@ describe('GET /processo-seletivo', () => {
     });
 });
 
+describe('GET /processo-seletivo/:id', () => {
+  beforeEach(async () => {
+    const connection = await createConnection()
+    await connection.dropDatabase()
+    await connection.close()
+
+    await request(app).post('/contratante').send({
+        email: 'test@test.com.br',
+        cnpj: '12345678900000',
+        company_name: 'Company Name Test',
+        trade_name: 'Trade Name Test',
+        password: '1234'
+    });
+
+    const login = await request(app).post('/login').send({
+        email: 'test@test.com.br',
+        password: '1234',
+    });
+
+    await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
+        title: 'title',
+        description: 'test',
+        deadline: 'test',
+        method_of_contact: 'test'
+    });
+
+    await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
+      title: 'title2',
+      description: 'test2',
+      deadline: 'test2',
+      method_of_contact: 'test2'
+    });
+  })
+
+  it('should be able to get process by contractor id', async () => {
+    const response = await request(app).get('/processo-seletivo/1')
+
+    expect(response.body).toMatchObject(
+      {
+        "0": {
+          "id": 1,
+          "title": "title",
+          "description": "test",
+          "deadline": "test",
+          "method_of_contact": "test"
+        },
+        "1": {
+          "id": 2,
+          "title": "title2",
+          "description": "test2",
+          "deadline": "test2",
+          "method_of_contact": "test2"
+        }
+      }
+    );
+  })
+
+  it('should be able to get process by contractor id 2', async () => {
+    
+    await request(app).post('/contratante').send({
+      email: 'test2@test2.com.br',
+      cnpj: '12345678900000',
+      company_name: 'Company Name Test2',
+      trade_name: 'Trade Name Test2',
+      password: '1234'
+    });
+
+    const login2 = await request(app).post('/login').send({
+      email: 'test2@test2.com.br',
+      password: '1234',
+    });
+
+    await request(app).post('/processo-seletivo').set('Authorization', login2.body.authorization).send({
+      title: 'title3',
+      description: 'test3',
+      deadline: 'test3',
+      method_of_contact: 'test3'
+    });
+
+    const response = await request(app).get('/processo-seletivo/2')
+
+    expect(response.body).toMatchObject(
+      {
+        "0": {
+          "id": 3,
+          "title": "title3",
+          "description": "test3",
+          "deadline": "test3",
+          "method_of_contact": "test3"
+        }
+      }
+    );
+  })
+
+  it('should return a empty list', async () => {
+    const response = await request(app).get('/processo-seletivo/:id').query({
+      id: 123
+    })
+
+    expect(response.body).toMatchObject(
+      {}
+    );
+  })
+})
+
 describe('DELETE /processo-seletivo', () => {
     beforeEach(async () => {
         const connection = await createConnection()
@@ -392,8 +497,8 @@ describe('POST /contratante', () => {
       expect(response.body).toMatchObject({
         email: 'america@company.com',
         cnpj: '12345678910111',
-        'company name': 'America',
-        'trade name': 'America'
+        company_name: 'America',
+        trade_name: 'America'
       })
     })
   
