@@ -8,7 +8,7 @@ import { Selective_Process } from './models/selective_process'
 import * as bcrypt from 'bcrypt'
 import cors from 'cors'
 
-const app = express()
+export const app = express()
 
 app.use(express.json())
 app.use(cors())
