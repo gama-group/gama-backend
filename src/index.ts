@@ -67,9 +67,7 @@ app.get('/contratante', async (request, response) => {
 app.get('/contratante/todos', async (request, response) => {
   const contractor = await connection.find_all_contractors()
 
-  const json = Object.assign({}, contractor)
-
-  return response.json(json)
+  return response.json(contractor)
 })
 
 app.use('/contratante', authMiddleware)
@@ -127,9 +125,8 @@ app.put('/contratante/:search_email', async (request, response) => {
 app.get('/processo-seletivo/todos', async (request, response) => {
   const process = await connection_process.find_all_selective_processes()
 
-  const json = Object.assign({}, process)
-
-  return response.json(json)
+  return response.json(process)
+  
 })
 
 app.get('/processo-seletivo', async (request, response) => {
@@ -196,13 +193,11 @@ app.get('/processo-seletivo/:id', async (request, response) => {
     return response.json({ message: 'process not found' })
   }
 
-  const json = Object.assign({}, process)
-
   for(let i = 0; i<process.length; i++){
-    delete json[i]['contractor']
+    delete process[i]['contractor']
   }
 
-  return response.json(json)
+  return response.json(process)
 })
 
 app.use('/processo-seletivo', authMiddleware)
