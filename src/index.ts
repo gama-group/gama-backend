@@ -15,7 +15,7 @@ app.use(cors())
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
-app.post('/adiciona', async (request, response) => {
+app.post('/contratante', async (request, response) => {
   const { email, cnpj, company_name, trade_name, password } = request.body
 
   console.log(email, cnpj, company_name, trade_name, password)
@@ -39,7 +39,7 @@ app.post('/adiciona', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/encontra', async (request, response) => {
+app.get('/contratante', async (request, response) => {
   const { email } = request.query
 
   if (typeof (email) !== 'string') {
@@ -63,7 +63,7 @@ app.get('/encontra', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/encontraTodos', async (request, response) => {
+app.get('/contratante/todos', async (request, response) => {
   const contractor = await connection.find_all_contractors()
 
   const json = Object.assign({}, contractor)
@@ -71,8 +71,8 @@ app.get('/encontraTodos', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/remove', authMiddleware)
-app.delete('/remove/:email', async (request, response) => {
+app.use('/contratante', authMiddleware)
+app.delete('/contratante/:email', async (request, response) => {
   const { email } = request.params
 
   if (typeof (email) !== 'string') {
@@ -96,8 +96,8 @@ app.delete('/remove/:email', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/update', authMiddleware)
-app.put('/update/:search_email', async (request, response) => {
+app.use('/contratante', authMiddleware)
+app.put('/contratante/:search_email', async (request, response) => {
   const { search_email } = request.params
   let contractor = await connection.find_contractor(search_email)
   if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
@@ -123,20 +123,33 @@ app.put('/update/:search_email', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/addProcess', authMiddleware)
-app.post('/addProcess', async (request, response) => {
-  const { title, description, deadline, method_of_contact } = request.body
+app.get('/processo-seletivo/todos', async (request, response) => {
+  const process = await connection_process.find_all_selective_processes()
 
-  const contractorId = response.locals.session.id
-  let process = new Selective_Process()
-  process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractorId)
+  const json = Object.assign({}, process)
+
+  return response.json(json)
+})
+
+app.get('/processo-seletivo', async (request, response) => {
+  const { id } = request.query
+
+  if (typeof (Number(id)) !== 'number') {
+    return response.status(400).json({ 'bad request': 'id is not a number' })
+  }
+
+  const process = await connection_process.find_selective_process_by_id(Number(id))
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
 
   const json = {
-    message: 'Foi inserido',
+    message: 'Foi encontrado',
     id: process.id,
     title: process.title,
     description: process.description,
-    'method of contact': process.method_of_contact,
+    method_of_contact: process.method_of_contact,
     deadline: process.deadline,
     id_contractor: process.contractor.id
   }
@@ -169,41 +182,32 @@ app.get('/findProcessByTitle', async (request, response) => {
   return response.json(json)
 })
 
-app.get('/findProcessById', async (request, response) => {
-  const { id } = request.query
+app.use('/processo-seletivo', authMiddleware)
+app.post('/processo-seletivo', async (request, response) => {
+  const { title, description, deadline, method_of_contact } = request.body
 
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
-  }
-
-  const process = await connection_process.find_selective_process_by_id(Number(id))
+  const contractorId = response.locals.session.id
+  let process = new Selective_Process()
+  process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractorId)
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })
   }
 
   const json = {
-    message: 'Foi encontrado',
+    message: 'Foi inserido',
     id: process.id,
     title: process.title,
     description: process.description,
-    method_of_contact: process.method_of_contact,
+    'method of contact': process.method_of_contact,
     deadline: process.deadline,
     id_contractor: process.contractor.id
   }
   return response.json(json)
 })
 
-app.get('/findAllProcess', async (request, response) => {
-  const process = await connection_process.find_all_selective_processes()
-
-  const json = Object.assign({}, process)
-
-  return response.json(json)
-})
-
-app.use('/removeProcess', authMiddleware)
-app.delete('/removeProcess/:id', async (request, response) => {
+app.use('/processo-seletivo', authMiddleware)
+app.delete('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
   if (typeof (Number(id)) !== 'number') {
@@ -230,8 +234,8 @@ app.delete('/removeProcess/:id', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/updateProcess', authMiddleware)
-app.put('/updateProcess/:id', async (request, response) => {
+app.use('/processo-seletivo', authMiddleware)
+app.put('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
   const { title, description, deadline, method_of_contact } = request.body
 
@@ -284,6 +288,4 @@ app.post('/login', async (request, response) => {
   return response.json({ authorization: genUserToken({ id: contractor.id }) })
 })
 
-app.listen(3333)
-
-export { app }
+export const server = app.listen(3333)

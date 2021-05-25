@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { contractorDAO } from "../controller/controllerDAO";
 
 export class PasswordHandler {
     async authenticate_contractor(given_password: string, actual_password: string) {
