@@ -91,6 +91,27 @@ export class selective_processDAO {
     }
   }
 
+  async find_selective_process_of_contractor_by_id(id: number): Promise<Selective_Process[]>{
+    try{
+      const connection = await createConnection()
+
+      const process = await connection
+        .getRepository(Selective_Process)
+        .createQueryBuilder('process')
+        .leftJoinAndSelect('process.contractor', 'contractor')
+        .where('process.contractor.id = :id', { id: id })
+        .getMany()
+
+      await connection.close()
+
+      return process
+    
+    } catch(e){
+      console.log('error', e)
+      return undefined
+    }
+  }
+
   async find_and_delete_selective_process_by_id (id: Number):Promise<Selective_Process> {
     try {
       const connection = await createConnection()
