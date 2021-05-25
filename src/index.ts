@@ -288,5 +288,3 @@ app.post('/login', async (request, response) => {
 })
 
 app.listen(3333)
-
-export { app }
