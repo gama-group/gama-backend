@@ -136,6 +136,10 @@ app.get('/processo-seletivo', async (request, response) => {
 
   const process = await connection_process.find_selective_process_by_id(Number(id))
 
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
   const json = {
     message: 'Foi encontrado',
     id: process.id,

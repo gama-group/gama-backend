@@ -4,13 +4,13 @@ import { genUserToken, authMiddleware, unauthorized } from '../helpers/authentic
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
 import { app } from '../index';
 
-describe('GET /addProcess', () => {
+describe('POST /processo-seletivo', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -25,7 +25,7 @@ describe('GET /addProcess', () => {
             password: '1234',
         });
 
-        const response = await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        const response = await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
           title: 'title',
           description: 'test',
           deadline: 'test',
@@ -44,7 +44,7 @@ describe('GET /addProcess', () => {
     });
 
     it('should not be able to create a new process without authorization', async () => {
-        const response = await request(app).post('/addProcess').send({
+        const response = await request(app).post('/processo-seletivo').send({
           title: 'title',
           description: 'test',
           deadline: 'test',
@@ -63,7 +63,7 @@ describe('GET /findProcessByTitle', () => {
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -76,7 +76,7 @@ describe('GET /findProcessByTitle', () => {
             password: '1234',
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
             title: 'title',
             description: 'test',
             deadline: 'test',
@@ -111,13 +111,13 @@ describe('GET /findProcessByTitle', () => {
     });
 });
 
-describe('GET /findAllProcess', () => {
+describe('GET /processo-seletivo/todos', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -132,21 +132,21 @@ describe('GET /findAllProcess', () => {
             password: '1234',
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
             title: 'title',
             description: 'test',
             deadline: 'test',
             method_of_contact: 'test'
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
             title: 'title 2',
             description: 'test',
             deadline: 'test',
             method_of_contact: 'test'
         });
 
-        const response = await request(app).get('/findAllProcess')
+        const response = await request(app).get('/processo-seletivo/todos')
 
         expect(response.body).toMatchObject({
             '0': {
@@ -167,19 +167,19 @@ describe('GET /findAllProcess', () => {
     });
 
     it('should find any process', async () => {
-        const response = await request(app).get('/findAllProcess')
+        const response = await request(app).get('/processo-seletivo/todos')
 
         expect(response.body).toMatchObject({});
     });
 });
 
-describe('GET /findProcessById', () => {
+describe('GET /processo-seletivo', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -192,7 +192,7 @@ describe('GET /findProcessById', () => {
             password: '1234',
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
             title: 'title',
             description: 'test',
             deadline: 'test',
@@ -201,7 +201,7 @@ describe('GET /findProcessById', () => {
     })
 
     it('should be able to find a process by id', async () => {
-        const response = await request(app).get('/findProcessById').query({
+        const response = await request(app).get('/processo-seletivo').query({
             id: 1
         })
 
@@ -216,8 +216,8 @@ describe('GET /findProcessById', () => {
         });
     });
 
-    it('should be able to find a process if the process does not exist', async () => {
-        const response = await request(app).get('/findProcessById').query({
+    it('should not be able to find a process if the process does not exist', async () => {
+        const response = await request(app).get('/processo-seletivo').query({
             id: 1234
         })
 
@@ -227,13 +227,13 @@ describe('GET /findProcessById', () => {
     });
 });
 
-describe('DELETE /removeProcess', () => {
+describe('DELETE /processo-seletivo', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -248,14 +248,14 @@ describe('DELETE /removeProcess', () => {
             password: '1234',
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
             title: 'title',
             description: 'test',
             deadline: 'test',
             method_of_contact: 'test'
         });
 
-        const response = await request(app).delete('/removeProcess/1').set('Authorization', login.body.authorization)
+        const response = await request(app).delete('/processo-seletivo/1').set('Authorization', login.body.authorization)
 
         expect(response.body).toMatchObject({
             message: 'Foi removido',
@@ -273,7 +273,7 @@ describe('DELETE /removeProcess', () => {
             password: '1234',
         });
 
-        const response = await request(app).delete('/removeProcess').set('Authorization', login.body.authorization).send({
+        const response = await request(app).delete('/processo-seletivo').set('Authorization', login.body.authorization).send({
             id: 123
         })
 
@@ -281,7 +281,7 @@ describe('DELETE /removeProcess', () => {
     });
 
     it('should not be able to remove a process without authorization', async () => {
-        const response = await request(app).delete('/removeProcess').send({
+        const response = await request(app).delete('/processo-seletivo').send({
             id: '1'
         })
 
@@ -291,13 +291,13 @@ describe('DELETE /removeProcess', () => {
     });
 });
 
-describe('PUT /updateProcess', () => {
+describe('PUT /processo-seletivo', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
 
-        await request(app).post('/adiciona').send({
+        await request(app).post('/contratante').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
@@ -310,7 +310,7 @@ describe('PUT /updateProcess', () => {
             password: '1234',
         });
 
-        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
           title: 'title',
           description: 'test',
           deadline: 'test',
@@ -324,7 +324,7 @@ describe('PUT /updateProcess', () => {
             password: '1234',
         });
 
-        const response = await request(app).put('/updateProcess/1').set('Authorization', login.body.authorization).send({
+        const response = await request(app).put('/processo-seletivo/1').set('Authorization', login.body.authorization).send({
             title: 'new title',
             description: '',
             deadline: 'deadline',
@@ -348,7 +348,7 @@ describe('PUT /updateProcess', () => {
             password: '1234',
         });
 
-        const response = await request(app).put('/updateProcess/456').set('Authorization', login.body.authorization).send({
+        const response = await request(app).put('/processo-seletivo/456').set('Authorization', login.body.authorization).send({
             title: 'new title',
             description: '',
             deadline: 'deadline',
@@ -361,7 +361,7 @@ describe('PUT /updateProcess', () => {
     });
 
     it('should not be able to update a process without authorization', async () => {
-        const response = await request(app).put('/updateProcess/1').send({
+        const response = await request(app).put('/processo-seletivo/1').send({
             title: 'new title',
             description: '',
             deadline: 'deadline',
