@@ -435,7 +435,7 @@ describe('PUT /processo-seletivo', () => {
             deadline: 'deadline',
             method_of_contact: ''
         });
-        
+
         expect(response.body).toMatchObject({
             message: 'Foi atualizado',
             id: 1,
@@ -459,7 +459,7 @@ describe('PUT /processo-seletivo', () => {
             deadline: 'deadline',
             method_of_contact: ''
         });
-        
+
         expect(response.body).toMatchObject({
             message: 'process not found'
         })
@@ -472,7 +472,7 @@ describe('PUT /processo-seletivo', () => {
             deadline: 'deadline',
             method_of_contact: ''
         });
-        
+
         expect(response.body).toMatchObject({
             message: 'Unauthorized'
         })
@@ -493,7 +493,7 @@ describe('POST /contratante', () => {
         trade_name: 'America',
         password: '123'
       })
-  
+
       expect(response.body).toMatchObject({
         email: 'america@company.com',
         cnpj: '12345678910111',
@@ -501,7 +501,7 @@ describe('POST /contratante', () => {
         trade_name: 'America'
       })
     })
-  
+
     it('shouldnt be able to add existing contractor', async () => {
       await request(app).post('/contratante').send({
         email: 'america@company.com',
@@ -510,7 +510,7 @@ describe('POST /contratante', () => {
         trade_name: 'America',
         password: '123'
       })
-  
+
       const response1 = await request(app).post('/contratante').send({
         email: 'america@company.com',
         cnpj: '12345678910111',
@@ -518,27 +518,27 @@ describe('POST /contratante', () => {
         trade_name: 'America',
         password: '123'
       })
-  
+
       expect(response1.body).toMatchObject({
         message: 'Unable to create user.'
       })
     })
   })
-  
+
   describe('GET /contratante', () => {
     beforeEach(async () => {
       const connection = await createConnection()
       await connection.dropDatabase()
       await connection.close()
     })
-  
+
     it('shouldnt find someone', async () => {
       const response = await request(app).get('/contratante?email=america@company.com')
       expect(response.body).toMatchObject({
         message: 'contractor not found'
       })
     })
-  
+
     it('should find someone', async () => {
       await request(app).post('/contratante').send({
         email: 'america@company.com',
@@ -559,7 +559,7 @@ describe('POST /contratante', () => {
       })
     })
   })
-  
+
   describe('GET /contratante/todos', () => {
     beforeEach(async () => {
       const connection = await createConnection()
@@ -585,7 +585,7 @@ describe('POST /contratante', () => {
       expect(Object.keys(response.body).length).toBe(2)
     })
   })
-  
+
   describe('DELETE /contratante/:email', () => {
     beforeEach(async () => {
       const connection = await createConnection()
@@ -601,24 +601,24 @@ describe('POST /contratante', () => {
     })
     it('shouldnt allow removal because unauthorized acess', async () => {
       const response = await request(app).delete('/contratante/america@company.com')
-  
+
       expect(response.body).toMatchObject({
         message: 'Unauthorized'
       })
     })
-  
+
     it('shouldnt allow removal because dont exists contractor looked for', async () => {
       const login = await request(app).post('/login').send({
         email: 'facebook@company.com',
         password: '123'
       })
-  
+
       const response = await request(app).delete('/contratante/america@company.com').set('Authorization', login.body.authorization)
       expect(response.body).toMatchObject({
         message: 'Contractor not found'
       })
     })
-  
+
     it('shouldnt allow removal because user dont have credentials to remove', async () => {
       const login = await request(app).post('/login').send({
         email: 'facebook@company.com',
@@ -641,7 +641,7 @@ describe('POST /contratante', () => {
       const response = await request(app).delete('/contratante/america@company.com').set('Authorization', login.body.authorization)
       expect(response.body).toMatchObject({message: 'Unauthorized'})
     })
-  
+
     it('should remove successfully', async () => {
       const login = await request(app).post('/login').send({
         email: 'facebook@company.com',
@@ -665,7 +665,7 @@ describe('POST /contratante', () => {
       expect(response.body).toMatchObject({ message: 'Foi Removido' })
     })
   })
-  
+
   describe('PUT /update', () => {
     beforeEach(async () => {
       const connection = await createConnection()
@@ -691,7 +691,7 @@ describe('POST /contratante', () => {
         email: 'america@company.com',
         password: '123'
       })
-  
+
       const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
         email: 'americana@company.com.br',
         cnpj: '12345678900001',
@@ -699,18 +699,18 @@ describe('POST /contratante', () => {
         trade_name: 'Americana Company',
         password: '123abc'
       })
-  
+
       expect(response.body).toMatchObject({
         message: 'Foi atualizado'
       })
     })
-  
+
     it('shouldnt update contractor because credentials didnt match', async () => {
       const login = await request(app).post('/login').send({
         email: 'america@company.com',
         password: '123'
       })
-  
+
       const response = await request(app).put('/contratante/facebook@company.com').set('Authorization', login.body.authorization).send({
         email: 'americana@company.com.br',
         cnpj: '12345678900001',
@@ -718,12 +718,12 @@ describe('POST /contratante', () => {
         trade_name: 'Americana Company',
         password: '123abc'
       })
-  
+
       expect(response.body).toMatchObject({
         message: 'Unauthorized'
       })
     })
-  
+
     it('shouldnt update because unauthorized acess', async () => {
       const response = await request(app).put('/contratante/america@company.com').send({
         email: 'americana@company.com.br',
@@ -736,13 +736,13 @@ describe('POST /contratante', () => {
         message: 'Unauthorized'
       })
     })
-  
+
     it('shouldnt update because contractor wasnt inserted', async () => {
       const login = await request(app).post('/login').send({
         email: 'facebook@company.com',
         password: '123'
       })
-  
+
       const response = await request(app).put('/contratante/tesla@company.com').set('Authorization', login.body.authorization).send({
         email: 'tesla.motors@company.com.br',
         cnpj: '12345678900001',
@@ -754,4 +754,47 @@ describe('POST /contratante', () => {
         message: 'Contractor not found'
       })
     })
+  })
+
+  describe('POST/login', () => {
+      beforeEach(async () =>{
+          const connection = await createConnection()
+          await connection.dropDatabase()
+          await connection.close()
+
+          await request(app).post('/contratante').send({
+            email: 'bethesda@zenimax.com',
+            cnpj: '11101987654321',
+            company_name: 'Bethesda Softworks',
+            trade_name: 'Bethesda',
+            password: 'password'
+          })
+      })
+
+      it('should log in successfully, given the right credentials', async () => {
+          const login = await request(app).post('/login').send({
+            email: 'bethesda@zenimax.com',
+            password: 'password'
+          })
+
+          expect(login.status).toBe(200)
+      })
+
+      it('should not log in if the username is incorrect', async () => {
+          const login = await request(app).post('/login').send({
+              email: 'betesda@zenimax.com',
+              password: 'password'
+          })
+
+          expect(login.status).toBe(403)
+      })
+
+      it('should not log in if the password is incorrect', async () => {
+          const login = await request(app).post('/login').send({
+              email: 'bethesda@zenimax.com',
+              password: 'passcode'
+          })
+
+          expect(login.status).toBe(403)
+      })
   })
