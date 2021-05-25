@@ -9,19 +9,19 @@ describe('GET /addProcess', () => {
         const connection = await createConnection()
         await connection.dropDatabase()
         await connection.close()
-    })
 
-    it('should be able to create a new process', async () => {
-        const user_response = await request(app).post('/adiciona').send({
+        await request(app).post('/adiciona').send({
             email: 'test@test.com.br',
             cnpj: '12345678900000',
             company_name: 'Company Name Test',
             trade_name: 'Trade Name Test',
             password: '1234'
         });
+    })
 
+    it('should be able to create a new process', async () => {
         const login = await request(app).post('/login').send({
-            email: user_response.body.email,
+            email: 'test@test.com.br',
             password: '1234',
         });
 
@@ -40,6 +40,19 @@ describe('GET /addProcess', () => {
             'method of contact': 'test',
             deadline: 'test',
             id_contractor: 1
+        });
+    });
+
+    it('should not be able to create a new process without authorization', async () => {
+        const response = await request(app).post('/addProcess').send({
+          title: 'title',
+          description: 'test',
+          deadline: 'test',
+          method_of_contact: 'test'
+        });
+
+        expect(response.body).toMatchObject({
+            message: 'Unauthorized',
         });
     });
 });
@@ -86,6 +99,16 @@ describe('GET /findProcessByTitle', () => {
             id_contractor: 1
         });
     });
+
+    it('should not be able to find a process by title if the process does not exist', async () => {
+        const response = await request(app).get('/findProcessByTitle').query({
+            title: 'title 2'
+        })
+
+        expect(response.body).toMatchObject({
+            message: 'process not found'
+        })
+    });
 });
 
 describe('GET /findAllProcess', () => {
@@ -101,7 +124,9 @@ describe('GET /findAllProcess', () => {
             trade_name: 'Trade Name Test',
             password: '1234'
         });
+    })
 
+    it('should be able to find all process', async () => {
         const login = await request(app).post('/login').send({
             email: 'test@test.com.br',
             password: '1234',
@@ -120,9 +145,7 @@ describe('GET /findAllProcess', () => {
             deadline: 'test',
             method_of_contact: 'test'
         });
-    })
 
-    it('should be able to find a process by title', async () => {
         const response = await request(app).get('/findAllProcess')
 
         expect(response.body).toMatchObject({
@@ -141,6 +164,12 @@ describe('GET /findAllProcess', () => {
                 method_of_contact: 'test'
             }
         });
+    });
+
+    it('should find any process', async () => {
+        const response = await request(app).get('/findAllProcess')
+
+        expect(response.body).toMatchObject({});
     });
 });
 
@@ -171,7 +200,7 @@ describe('GET /findProcessById', () => {
         });
     })
 
-    it('should be able to find a process by title', async () => {
+    it('should be able to find a process by id', async () => {
         const response = await request(app).get('/findProcessById').query({
             id: 1
         })
@@ -186,9 +215,83 @@ describe('GET /findProcessById', () => {
             id_contractor: 1
         });
     });
+
+    it('should be able to find a process if the process does not exist', async () => {
+        const response = await request(app).get('/findProcessById').query({
+            id: 1234
+        })
+
+        expect(response.body).toMatchObject({
+            message: 'process not found',
+        });
+    });
 });
 
 describe('DELETE /removeProcess', () => {
+    beforeEach(async () => {
+        const connection = await createConnection()
+        await connection.dropDatabase()
+        await connection.close()
+
+        await request(app).post('/adiciona').send({
+            email: 'test@test.com.br',
+            cnpj: '12345678900000',
+            company_name: 'Company Name Test',
+            trade_name: 'Trade Name Test',
+            password: '1234'
+        });
+    })
+
+    it('should be able to remove a process', async () => {
+        const login = await request(app).post('/login').send({
+            email: 'test@test.com.br',
+            password: '1234',
+        });
+
+        await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
+            title: 'title',
+            description: 'test',
+            deadline: 'test',
+            method_of_contact: 'test'
+        });
+
+        const response = await request(app).delete('/removeProcess/1').set('Authorization', login.body.authorization)
+
+        expect(response.body).toMatchObject({
+            message: 'Foi removido',
+            title: 'title',
+            description: 'test',
+            method_of_contact: 'test',
+            deadline: 'test',
+            id_contractor: 1
+        });
+    });
+
+    it('should not be able to remove a process if the process does not exist', async () => {
+        const login = await request(app).post('/login').send({
+            email: 'test@test.com.br',
+            password: '1234',
+        });
+
+        const response = await request(app).delete('/removeProcess').set('Authorization', login.body.authorization).send({
+            id: 123
+        })
+
+        expect(response.body).toEqual({})
+    });
+
+    it('should not be able to remove a process without authorization', async () => {
+        const response = await request(app).delete('/removeProcess').send({
+            id: '1'
+        })
+
+        expect(response.body).toMatchObject({
+            message: 'Unauthorized'
+        })
+    });
+});
+
+describe('PUT /updateProcess', () => {
     beforeEach(async () => {
         const connection = await createConnection()
         await connection.dropDatabase()
@@ -208,26 +311,65 @@ describe('DELETE /removeProcess', () => {
         });
 
         await request(app).post('/addProcess').set('Authorization', login.body.authorization).send({
-            title: 'title',
-            description: 'test',
-            deadline: 'test',
-            method_of_contact: 'test'
+          title: 'title',
+          description: 'test',
+          deadline: 'test',
+          method_of_contact: 'test'
         });
     })
 
-    it('should be able to remove a process', async () => {
-        const response = await request(app).get('/removeProcess').query({
-            title: 'title'
-        })
-
-        expect(response.body).toMatchObject({
-            message: 'Foi encontrado',
-            id: 1,
-            title: 'title',
-            description: 'test',
-            method_of_contact: 'test',
-            deadline: 'test',
-            id_contractor: 1
+    it('should be able to update a process', async () => {
+        const login = await request(app).post('/login').send({
+            email: 'test@test.com.br',
+            password: '1234',
         });
+
+        const response = await request(app).put('/updateProcess/1').set('Authorization', login.body.authorization).send({
+            title: 'new title',
+            description: '',
+            deadline: 'deadline',
+            method_of_contact: ''
+        });
+        
+        expect(response.body).toMatchObject({
+            message: 'Foi atualizado',
+            id: 1,
+            title: 'new title',
+            description: '',
+            method_of_contact: '',
+            deadline: 'deadline',
+            id_contractor: 1
+        })
+    });
+
+    it('should not be able to update a process if the process does not exist', async () => {
+        const login = await request(app).post('/login').send({
+            email: 'test@test.com.br',
+            password: '1234',
+        });
+
+        const response = await request(app).put('/updateProcess/456').set('Authorization', login.body.authorization).send({
+            title: 'new title',
+            description: '',
+            deadline: 'deadline',
+            method_of_contact: ''
+        });
+        
+        expect(response.body).toMatchObject({
+            message: 'process not found'
+        })
+    });
+
+    it('should not be able to update a process without authorization', async () => {
+        const response = await request(app).put('/updateProcess/1').send({
+            title: 'new title',
+            description: '',
+            deadline: 'deadline',
+            method_of_contact: ''
+        });
+        
+        expect(response.body).toMatchObject({
+            message: 'Unauthorized'
+        })
     });
 });
