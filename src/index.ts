@@ -12,7 +12,6 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
-
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
@@ -49,6 +48,9 @@ app.get('/encontra', async (request, response) => {
 
   const contractor = await connection.find_contractor(email)
 
+  if (contractor === undefined) {
+    return response.status(404).json({ message: 'contractor not found' })
+  }
   const json = {
     message: 'Foi encontrado',
     email: contractor.email,
@@ -269,3 +271,5 @@ app.post('/login', async (request, response) => {
 })
 
 app.listen(3333)
+
+export { app }
