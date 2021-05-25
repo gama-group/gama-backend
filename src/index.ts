@@ -148,30 +148,6 @@ app.get('/processo-seletivo', async (request, response) => {
   return response.json(json)
 })
 
-app.use('/processo-seletivo', authMiddleware)
-app.post('/processo-seletivo', async (request, response) => {
-  const { title, description, deadline, method_of_contact } = request.body
-
-  const contractorId = response.locals.session.id
-  let process = new Selective_Process()
-  process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractorId)
-
-  if (process === undefined) {
-    return response.json({ message: 'process not found' })
-  }
-
-  const json = {
-    message: 'Foi inserido',
-    id: process.id,
-    title: process.title,
-    description: process.description,
-    'method of contact': process.method_of_contact,
-    deadline: process.deadline,
-    id_contractor: process.contractor.id
-  }
-  return response.json(json)
-})
-
 app.get('/findProcessByTitle', async (request, response) => {
   const { title } = request.query
 
@@ -195,6 +171,30 @@ app.get('/findProcessByTitle', async (request, response) => {
     id_contractor: process.contractor.id
   }
 
+  return response.json(json)
+})
+
+app.use('/processo-seletivo', authMiddleware)
+app.post('/processo-seletivo', async (request, response) => {
+  const { title, description, deadline, method_of_contact } = request.body
+
+  const contractorId = response.locals.session.id
+  let process = new Selective_Process()
+  process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractorId)
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
+  const json = {
+    message: 'Foi inserido',
+    id: process.id,
+    title: process.title,
+    description: process.description,
+    'method of contact': process.method_of_contact,
+    deadline: process.deadline,
+    id_contractor: process.contractor.id
+  }
   return response.json(json)
 })
 
