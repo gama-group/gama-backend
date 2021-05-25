@@ -5,7 +5,7 @@ import { selective_processDAO } from './controller/selective_processDAO'
 import { Contractor } from './models/contractor'
 import { genUserToken, authMiddleware, unauthorized } from './helpers/authentication'
 import { Selective_Process } from './models/selective_process'
-import * as bcrypt from 'bcrypt'
+import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
 
 export const app = express()
@@ -274,9 +274,10 @@ app.post('/login', async (request, response) => {
   if (!email) return response.status(400).json({ message: 'Email field is missing.' })
   if (!password) return response.status(400).json({ message: 'Password field is missing.' })
 
+  const pw_handler = new PasswordHandler()
   const contractor = await connection.find_contractor(email)
   // TODO: Hash password before comparing it
-  if (!contractor || !(await bcrypt.compare(password, contractor.password))) {
+  if (!contractor || !(await pw_handler.authenticate_contractor(password, contractor.password))) {
     return response.status(403).json({ message: 'Invalid username or password.' })
   }
 
