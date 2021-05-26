@@ -8,7 +8,7 @@ export class SelectiveProcessDao {
   async addSelectiveProcess (title: string, description: string, deadline: string, methodOfContact: string, contractorId: string) {
     try {
       const connection = await createConnection()
-      const process = new SelectiveProcess()
+      let process = new SelectiveProcess()
 
       const contractor = await connection
         .getRepository(Contractor)
@@ -22,10 +22,10 @@ export class SelectiveProcessDao {
       process.methodOfContact = methodOfContact
       process.contractor = contractor
 
-      await connection.manager.save(process)
+      process = await connection.manager.save(process)
 
       console.log('SelectiveProcess seletivo salvo')
-
+      console.log(process)
       await connection.close()
 
       return process
