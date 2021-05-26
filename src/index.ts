@@ -126,20 +126,19 @@ app.get('/processo-seletivo/todos', async (request, response) => {
   const process = await connection_process.find_all_selective_processes()
 
   return response.json(process)
-  
 })
 
 app.get('/processo-seletivo', async (request, response) => {
   const { id } = request.query
 
   if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
+    return response.status(400).json({ message: 'id is not a number' })
   }
 
   const process = await connection_process.find_selective_process_by_id(Number(id))
 
   if (process === undefined) {
-    return response.json({ message: 'process not found' })
+    return response.status(404).json({ message: 'process not found' })
   }
 
   const json = {
@@ -187,14 +186,14 @@ app.get('/processo-seletivo/:id', async (request, response) => {
     return response.status(400).json({ 'bad request': 'id is not a number' })
   }
 
-  let process = await connection_process.find_selective_process_of_contractor_by_id(Number(id))
+  const process = await connection_process.find_selective_process_of_contractor_by_id(Number(id))
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })
   }
 
-  for(let i = 0; i<process.length; i++){
-    delete process[i]['contractor']
+  for (let i = 0; i < process.length; i++) {
+    delete process[i].contractor
   }
 
   return response.json(process)
@@ -229,7 +228,7 @@ app.delete('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
   if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
+    return response.status(400).json({ message: 'id is not a number' })
   }
 
   const contractorId = response.locals.session.id
