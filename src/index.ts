@@ -7,6 +7,7 @@ import { genUserToken, authMiddleware, unauthorized } from './helpers/authentica
 import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
+import { LessThan } from 'typeorm'
 
 export const app = express()
 
@@ -31,8 +32,8 @@ app.post('/contratante', async (request, response) => {
     email: contractor.email,
     password: contractor.password,
     cnpj: contractor.cnpj,
-    'company name': contractor.company_name,
-    'trade name': contractor.trade_name,
+    company_name: contractor.company_name,
+    trade_name: contractor.trade_name,
     authorization: genUserToken({ id: contractor.id })
   }
 
@@ -66,9 +67,7 @@ app.get('/contratante', async (request, response) => {
 app.get('/contratante/todos', async (request, response) => {
   const contractor = await connection.find_all_contractors()
 
-  const json = Object.assign({}, contractor)
-
-  return response.json(json)
+  return response.json(contractor)
 })
 
 app.use('/contratante', authMiddleware)
@@ -126,9 +125,7 @@ app.put('/contratante/:search_email', async (request, response) => {
 app.get('/processo-seletivo/todos', async (request, response) => {
   const process = await connection_process.find_all_selective_processes()
 
-  const json = Object.assign({}, process)
-
-  return response.json(json)
+  return response.json(process)
 })
 
 app.get('/processo-seletivo', async (request, response) => {
@@ -182,6 +179,26 @@ app.get('/findProcessByTitle', async (request, response) => {
   return response.json(json)
 })
 
+app.get('/processo-seletivo/:id', async (request, response) => {
+  const { id } = request.params
+
+  if (typeof (Number(id)) !== 'number') {
+    return response.status(400).json({ 'bad request': 'id is not a number' })
+  }
+
+  const process = await connection_process.find_selective_process_of_contractor_by_id(Number(id))
+
+  if (process === undefined) {
+    return response.json({ message: 'process not found' })
+  }
+
+  for (let i = 0; i < process.length; i++) {
+    delete process[i].contractor
+  }
+
+  return response.json(process)
+})
+
 app.use('/processo-seletivo', authMiddleware)
 app.post('/processo-seletivo', async (request, response) => {
   const { title, description, deadline, method_of_contact } = request.body
@@ -199,7 +216,7 @@ app.post('/processo-seletivo', async (request, response) => {
     id: process.id,
     title: process.title,
     description: process.description,
-    'method of contact': process.method_of_contact,
+    method_of_contact: process.method_of_contact,
     deadline: process.deadline,
     id_contractor: process.contractor.id
   }
@@ -211,7 +228,7 @@ app.delete('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
   if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
+    return response.status(400).json({ message: 'id is not a number' })
   }
 
   const contractorId = response.locals.session.id
