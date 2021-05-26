@@ -4,10 +4,10 @@ import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
 
-export class contractorDAO {
-  async add_contractor (email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor> {
+export class ContractorDAO {
+  async addContractor (email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
     const connection = await createConnection()
-    const pw_handler = new PasswordHandler()
+    const pwHandler = new PasswordHandler()
     let contractor
 
     try {
@@ -20,9 +20,9 @@ export class contractorDAO {
         contractor = new Contractor()
         contractor.email = email
         contractor.cnpj = cnpj
-        contractor.trade_name = trade_name
-        contractor.company_name = company_name
-        contractor.password = await pw_handler.hash_new_password(password)
+        contractor.tradeName = tradeName
+        contractor.companyName = companyName
+        contractor.password = await pwHandler.hashNewPassword(password)
         await connection.manager.save(contractor)
       } else contractor = null
 
@@ -36,7 +36,7 @@ export class contractorDAO {
     return contractor
   }
 
-  async find_contractor (search: string):Promise<Contractor> {
+  async findContractor (search: string):Promise<Contractor> {
     try {
       const connection = await createConnection()
 
@@ -56,7 +56,7 @@ export class contractorDAO {
     }
   }
 
-  async find_contractor_by_id (id: string):Promise<Contractor> {
+  async findContractorById (id: string):Promise<Contractor> {
     try {
       const connection = await createConnection()
 
@@ -76,7 +76,7 @@ export class contractorDAO {
     }
   }
 
-  async find_all_contractors ():Promise<Contractor[]> {
+  async findAllContractors ():Promise<Contractor[]> {
     try {
       const connection = await createConnection()
 
@@ -90,7 +90,7 @@ export class contractorDAO {
     }
   }
 
-  async find_and_delete_contractor (search: string):Promise<Contractor> {
+  async findAndDeleteContractor (search: string):Promise<Contractor> {
     try {
       const connection = await createConnection()
 
@@ -112,22 +112,22 @@ export class contractorDAO {
     }
   }
 
-  async update_contractor (search_email: string, email: string, cnpj: string, trade_name: string, company_name: string, password: string):Promise<Contractor> {
+  async updateContractor (searchEmail: string, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
     let connection
     try {
       connection = await createConnection()
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
-        .where('contractor.email = :email', { email: search_email })
+        .where('contractor.email = :email', { email: searchEmail })
         .getOne()
 
-      const pw_handler = new PasswordHandler()
+      const pwHandler = new PasswordHandler()
       contractor.email = email
       contractor.cnpj = cnpj
-      contractor.trade_name = trade_name
-      contractor.company_name = company_name
-      contractor.password = await pw_handler.update_password(contractor.password, password)
+      contractor.tradeName = tradeName
+      contractor.companyName = companyName
+      contractor.password = await pwHandler.updatePassword(contractor.password, password)
 
       console.log('updating...', contractor)
 
