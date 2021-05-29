@@ -41,6 +41,7 @@
     "@types/cors": "^2.8.10",
     "@types/jest": "^26.0.23",
     "@types/jsonwebtoken": "^8.5.1",
+    "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
