@@ -18,7 +18,8 @@ module.exports = {
           '@controllers': './src/controllers',
           '@views': './src/views'
         }
-      }]
+      }],
+      ["@babel/plugin-proposal-decorators", { "legacy": true }],
     ],
     ignore: [
       '**/*.spec.ts'
