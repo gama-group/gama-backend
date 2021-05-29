@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 export class PasswordHandler {
     async authenticate_contractor(given_password: string, actual_password: string) {
         if(!await bcrypt.compare(given_password, actual_password)) {
-            //console.log("Authentication has failed.");
             return false;
         } else {
             return true;
