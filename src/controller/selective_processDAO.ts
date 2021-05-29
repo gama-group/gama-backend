@@ -25,7 +25,7 @@ export class selective_processDAO {
 
       await connection.manager.save(process)
 
-      console.log('Selective_Process seletivo salvo')
+      //console.log('Selective_Process seletivo salvo')
 
       await connection.close()
 
@@ -81,7 +81,7 @@ export class selective_processDAO {
         .where('process.id = :id', { id: id })
         .getOne()
 
-      console.log(id, process)
+      //console.log(id, process)
       await connection.close()
 
       return process
@@ -158,7 +158,7 @@ export class selective_processDAO {
 
       await connection.manager.getRepository(Selective_Process).save(process)
 
-      console.log('Selective_Process seletivo salvo')
+      //console.log('Selective_Process seletivo salvo')
 
       await connection.close()
       return process

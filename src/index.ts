@@ -18,7 +18,7 @@ const connection_process = new selective_processDAO()
 app.post('/contratante', async (request, response) => {
   const { email, cnpj, company_name, trade_name, password } = request.body
 
-  console.log(email, cnpj, company_name, trade_name, password)
+  //console.log(email, cnpj, company_name, trade_name, password)
 
   let contractor = new Contractor()
   contractor = await connection.add_contractor(email, cnpj, company_name, trade_name, password)
@@ -234,7 +234,7 @@ app.put('/processo-seletivo/:id', async (request, response) => {
   const contractorId = response.locals.session.id
   const contractor = await connection.find_contractor_by_id(contractorId)
   let process = await connection_process.find_selective_process_by_id(Number(id))
-  console.log('Found process', process)
+  //console.log('Found process', process)
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })
