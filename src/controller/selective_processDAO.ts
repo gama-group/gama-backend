@@ -152,6 +152,7 @@ export class selective_processDAO {
       process.contractor = contractor
 
       await connection.manager.getRepository(Selective_Process).save(process)
+
       await connection.close()
       return process
     } catch (e) {

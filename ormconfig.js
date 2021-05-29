@@ -1,4 +1,4 @@
-{
+module.exports = {
     "type": "sqlite",
     "host": "localhost",
     "port": 3333,
@@ -7,7 +7,7 @@
     "database": "db",
     "logging": false,
     "entities": [
-       "src/models/*.ts"
+       process.env.TYPEORM_ENTITIES
     ],
     "migrations": [
        "src/database/migrations/*.ts"

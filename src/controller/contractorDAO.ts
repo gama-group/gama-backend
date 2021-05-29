@@ -25,6 +25,7 @@ export class contractorDAO {
         contractor.password = await pw_handler.hash_new_password(password)
         await connection.manager.save(contractor)
       } else contractor = null
+      
     } catch (e) {
       console.log('error', e)
       contractor = null
