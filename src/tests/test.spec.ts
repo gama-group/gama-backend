@@ -243,31 +243,24 @@ describe('GET /processo-seletivo', () => {
         });
     })
 
-    it('should be able to find a process by id', async () => {
-        const response = await request(app).get('/processo-seletivo').query({
-            id: 1
-        })
-
-        expect(response.body).toMatchObject({
-            message: 'Foi encontrado',
-            id: 1,
-            title: 'title',
-            description: 'test',
-            method_of_contact: 'test',
-            deadline: 'test',
-            id_contractor: 1
-        });
-    });
-
     it('should not be able to find a process if the process does not exist', async () => {
         const response = await request(app).get('/processo-seletivo').query({
-            id: 1234
+            id: Number('1234'),
         })
 
         expect(response.body).toMatchObject({
             message: 'process not found',
         });
     });
+    it('should be able to find a process', async () => {
+      const response = await request(app).get('/processo-seletivo').query({
+          id: Number('1'),
+      })
+
+      expect(response.body).toMatchObject({
+          message: 'Foi encontrado'
+      });
+  });
 });
 
 describe('GET /processo-seletivo/:id', () => {
@@ -741,6 +734,25 @@ describe('POST /contratante', () => {
         company_name: 'Americana',
         trade_name: 'Americana Company',
         password: '123abc'
+      })
+
+      expect(response.body).toMatchObject({
+        message: 'Foi atualizado'
+      })
+    })
+
+    it('should update successfully contractor with same password', async () => {
+      const login = await request(app).post('/login').send({
+        email: 'america@company.com',
+        password: '123'
+      })
+
+      const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
+        email: 'americana@company.com.br',
+        cnpj: '12345678900001',
+        company_name: 'Americana',
+        trade_name: 'Americana Company',
+        password: '123'
       })
 
       expect(response.body).toMatchObject({

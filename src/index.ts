@@ -7,7 +7,6 @@ import { genUserToken, authMiddleware, unauthorized } from './helpers/authentica
 import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
-import { LessThan } from 'typeorm'
 
 export const app = express()
 
@@ -74,10 +73,6 @@ app.use('/contratante', authMiddleware)
 app.delete('/contratante/:email', async (request, response) => {
   const { email } = request.params
 
-  if (typeof (email) !== 'string') {
-    return response.status(400).json({ 'bad request': 'email is not a string' })
-  }
-
   let contractor = await connection.find_contractor(email)
   if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
   if (contractor.id !== response.locals.session.id) return unauthorized(response)
@@ -104,10 +99,6 @@ app.put('/contratante/:search_email', async (request, response) => {
 
   const { email, cnpj, company_name, trade_name, password } = request.body
 
-  if (typeof (search_email) !== 'string') {
-    return response.status(400).json({ 'bad request': 'email is not a string' })
-  }
-
   contractor = await connection.update_contractor(search_email, email, cnpj, company_name, trade_name, password)
 
   const json = {
@@ -131,10 +122,6 @@ app.get('/processo-seletivo/todos', async (request, response) => {
 app.get('/processo-seletivo', async (request, response) => {
   const { id } = request.query
 
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ message: 'id is not a number' })
-  }
-
   const process = await connection_process.find_selective_process_by_id(Number(id))
 
   if (process === undefined) {
@@ -156,11 +143,7 @@ app.get('/processo-seletivo', async (request, response) => {
 app.get('/findProcessByTitle', async (request, response) => {
   const { title } = request.query
 
-  if (typeof (title) !== 'string') {
-    return response.status(400).json({ 'bad request': 'title is not a string' })
-  }
-
-  const process = await connection_process.find_selective_process_by_title(title)
+  const process = await connection_process.find_selective_process_by_title(String(title))
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })
@@ -182,14 +165,10 @@ app.get('/findProcessByTitle', async (request, response) => {
 app.get('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
 
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
-  }
-
   const process = await connection_process.find_selective_process_of_contractor_by_id(Number(id))
 
   if (process === undefined) {
-    return response.json({ message: 'process not found' })
+    return response.json({ message: 'process not found' }) //create test
   }
 
   for (let i = 0; i < process.length; i++) {
@@ -208,7 +187,7 @@ app.post('/processo-seletivo', async (request, response) => {
   process = await connection_process.add_selective_process(title, description, deadline, method_of_contact, contractorId)
 
   if (process === undefined) {
-    return response.json({ message: 'process not found' })
+    return response.json({ message: 'process not found' })//create test
   }
 
   const json = {
@@ -226,10 +205,6 @@ app.post('/processo-seletivo', async (request, response) => {
 app.use('/processo-seletivo', authMiddleware)
 app.delete('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
-
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ message: 'id is not a number' })
-  }
 
   const contractorId = response.locals.session.id
   const contractor = await connection.find_contractor_by_id(contractorId)
@@ -256,10 +231,6 @@ app.put('/processo-seletivo/:id', async (request, response) => {
   const { id } = request.params
   const { title, description, deadline, method_of_contact } = request.body
 
-  if (typeof (Number(id)) !== 'number') {
-    return response.status(400).json({ 'bad request': 'id is not a number' })
-  }
-
   const contractorId = response.locals.session.id
   const contractor = await connection.find_contractor_by_id(contractorId)
   let process = await connection_process.find_selective_process_by_id(Number(id))
@@ -284,10 +255,6 @@ app.put('/processo-seletivo/:id', async (request, response) => {
   }
 
   return response.json(json)
-})
-
-app.get('/', (request, response) => {
-  return response.json({ message: 'Hello World' })
 })
 
 app.post('/login', async (request, response) => {
