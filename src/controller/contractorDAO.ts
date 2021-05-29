@@ -26,7 +26,7 @@ export class contractorDAO {
         await connection.manager.save(contractor)
       } else contractor = null
 
-      console.log('Contratante foi salvo')
+      //console.log('Contratante foi salvo')
     } catch (e) {
       console.log('error', e)
       contractor = null
@@ -46,7 +46,7 @@ export class contractorDAO {
         .where('contractor.email = :email', { email: search })
         .getOne()
 
-      console.log('Found contractor: ', contractor)
+      //console.log('Found contractor: ', contractor)
       await connection.close()
 
       return contractor
@@ -66,7 +66,7 @@ export class contractorDAO {
         .where('contractor.id = :id', { id })
         .getOne()
 
-      console.log('Found contractor: ', contractor)
+      //console.log('Found contractor: ', contractor)
       await connection.close()
 
       return contractor
@@ -100,7 +100,7 @@ export class contractorDAO {
         .where('contractor.email = :email', { email: search })
         .getOne()
 
-      console.log(contractor)
+      //console.log(contractor)
 
       await connection.manager.remove(contractor)
       await connection.close()
@@ -129,7 +129,7 @@ export class contractorDAO {
       contractor.company_name = company_name
       contractor.password = await pw_handler.update_password(contractor.password, password)
 
-      console.log('updating...', contractor)
+      //console.log('updating...', contractor)
 
       await connection.manager.getRepository(Contractor).save(contractor)
       await connection.close()
