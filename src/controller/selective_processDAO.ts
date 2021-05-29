@@ -24,9 +24,6 @@ export class selective_processDAO {
       process.contractor = contractor
 
       await connection.manager.save(process)
-
-      console.log('Selective_Process seletivo salvo')
-
       await connection.close()
 
       return process
@@ -80,8 +77,6 @@ export class selective_processDAO {
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: id })
         .getOne()
-
-      console.log(id, process)
       await connection.close()
 
       return process
@@ -157,9 +152,6 @@ export class selective_processDAO {
       process.contractor = contractor
 
       await connection.manager.getRepository(Selective_Process).save(process)
-
-      console.log('Selective_Process seletivo salvo')
-
       await connection.close()
       return process
     } catch (e) {
