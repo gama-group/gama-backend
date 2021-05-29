@@ -1,6 +1,5 @@
 import * as jwt from "jsonwebtoken";
 import { Request, response, Response } from 'express';
-const ACCESS_TOKEN = "12345467890";
 
 interface ITokenUserData {
     id: Number

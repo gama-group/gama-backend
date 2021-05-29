@@ -272,4 +272,4 @@ app.post('/login', async (request, response) => {
   return response.json({ authorization: genUserToken({ id: contractor.id }) })
 })
 
-export const server = app.listen(process.env.TYPEORM_PORT)
+export const server = app.listen(3333)
