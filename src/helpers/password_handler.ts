@@ -13,13 +13,13 @@ export class PasswordHandler {
         if(await bcrypt.compare(new_password, current_password)) {
             return current_password;
         } else {
-            let hashed_password = await bcrypt.hash(new_password, 10);
+            let hashed_password = await bcrypt.hash(new_password, Number(process.env.BCRYPT_SALT_ROUNDS));
             return hashed_password;
         }
     }
 
     async hash_new_password(password: string) {
-        let hashed_password = await bcrypt.hash(password, 10);
+        let hashed_password = await bcrypt.hash(password, Number(process.env.BCRYPT_SALT_ROUNDS));
         return hashed_password;
     }
 }
