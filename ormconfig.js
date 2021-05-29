@@ -1,11 +1,11 @@
 module.exports = {
-    "type": "sqlite",
-    "host": "localhost",
+    "type": process.env.TYPEORM_CONNECTION,
+    "host": process.env.TYPEORM_HOST,
     "port": process.env.TYPEORM_PORT,
-    "username": "test",
-    "password": "test",
-    "database": "db",
-    "logging": false,
+    "username": process.env.TYPEORM_USERNAME,
+    "password": process.env.TYPEORM_PASSWORD,
+    "database": process.env.TYPEORM_DATABASE,
+    "logging": process.env.TYPEORM_LOGGING,
     "entities": [
        process.env.TYPEORM_ENTITIES
     ],
@@ -13,5 +13,5 @@ module.exports = {
        "src/database/migrations/*.ts"
     ],
     "keepConnectionAlive": true,
-    "synchronize": true
+    "synchronize": process.env.TYPEORM_SYCHRONIZE
  }
