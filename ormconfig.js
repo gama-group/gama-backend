@@ -1,7 +1,7 @@
 module.exports = {
     "type": "sqlite",
     "host": "localhost",
-    "port": 3333,
+    "port": process.env.TYPEORM_PORT,
     "username": "test",
     "password": "test",
     "database": "db",
