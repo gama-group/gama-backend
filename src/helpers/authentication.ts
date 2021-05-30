@@ -1,19 +1,18 @@
 import * as jwt from 'jsonwebtoken'
 import { Request, response, Response } from 'express'
-const ACCESS_TOKEN = '12345467890'
 
 interface ITokenUserData {
     id: Number
 };
 
 export const genUserToken = (data: ITokenUserData): string => {
-  return jwt.sign(data, ACCESS_TOKEN)
+  return jwt.sign(data, process.env.JWT_SECRET_KEY)
 }
 
 export const retrieveDataFromToken = (authorization: string): ITokenUserData | null => {
   const token = authorization
   try {
-    const data = jwt.verify(token, ACCESS_TOKEN)
+    const data = jwt.verify(token, process.env.JWT_SECRET_KEY)
     return data as ITokenUserData
   } catch (e) {
     return null

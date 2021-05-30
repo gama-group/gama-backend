@@ -1,8 +1,7 @@
 import { Contractor } from '../models/contractor'
-import { SourceMap } from 'module'
 import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
-import { Connection, ConnectionManager, createConnection } from 'typeorm'
+import { createConnection } from 'typeorm'
 
 export class ContractorDAO {
   async addContractor (email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
@@ -25,10 +24,8 @@ export class ContractorDAO {
         contractor.password = await pwHandler.hashNewPassword(password)
         await connection.manager.save(contractor)
       } else contractor = null
-
-      console.log('Contratante foi salvo')
     } catch (e) {
-      console.log('error', e)
+      console.log('Unable to add contractor: ', e)
       contractor = null
     }
 
@@ -46,7 +43,6 @@ export class ContractorDAO {
         .where('contractor.email = :email', { email: search })
         .getOne()
 
-      console.log('Found contractor: ', contractor)
       await connection.close()
 
       return contractor
@@ -66,7 +62,6 @@ export class ContractorDAO {
         .where('contractor.id = :id', { id })
         .getOne()
 
-      console.log('Found contractor: ', contractor)
       await connection.close()
 
       return contractor
@@ -100,8 +95,6 @@ export class ContractorDAO {
         .where('contractor.email = :email', { email: search })
         .getOne()
 
-      console.log(contractor)
-
       await connection.manager.remove(contractor)
       await connection.close()
 
@@ -128,8 +121,6 @@ export class ContractorDAO {
       contractor.tradeName = tradeName
       contractor.companyName = companyName
       contractor.password = await pwHandler.updatePassword(contractor.password, password)
-
-      console.log('updating...', contractor)
 
       await connection.manager.getRepository(Contractor).save(contractor)
       await connection.close()
