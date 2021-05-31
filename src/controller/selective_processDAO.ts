@@ -2,14 +2,13 @@ import { SourceMap } from 'module'
 import 'reflect-metadata'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
 import { Contractor } from '../models/contractor'
-import { Selective_Process } from '../models/selective_process'
-const bcrypt = require('bcrypt')
+import { SelectiveProcess } from '../models/selective_process'
 
-export class selective_processDAO {
-  async add_selective_process (title: string, description: string, deadline: string, method_of_contact: string, contractorId: string) {
+export class SelectiveProcessDao {
+  async addSelectiveProcess (title: string, description: string, deadline: string, methodOfContact: string, contractorId: string) {
     try {
       const connection = await createConnection()
-      const process = new Selective_Process()
+      let process = new SelectiveProcess()
 
       const contractor = await connection
         .getRepository(Contractor)
@@ -20,39 +19,40 @@ export class selective_processDAO {
       process.title = title
       process.description = description
       process.deadline = deadline
-      process.method_of_contact = method_of_contact
+      process.methodOfContact = methodOfContact
       process.contractor = contractor
 
-      await connection.manager.save(process)
+      process = await connection.manager.save(process)
+
       await connection.close()
 
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to add selective process', e)
       return undefined
     }
   }
 
-  async find_all_selective_processes (): Promise<Selective_Process[]> {
+  async findAllSelectiveProcesses (): Promise<SelectiveProcess[]> {
     try {
       const connection = await createConnection()
 
-      const processes = await connection.manager.find(Selective_Process)
+      const processes = await connection.manager.find(SelectiveProcess)
 
       await connection.close()
       return processes
     } catch (e) {
-      console.log('error')
+      console.log('Unable to find all selective processes', e)
       return undefined
     }
   }
 
-  async find_selective_process_by_title (search: string): Promise<Selective_Process> {
+  async findSelectiveProcessByTitle (search: string): Promise<SelectiveProcess> {
     try {
       const connection = await createConnection()
 
       const process = await connection
-        .getRepository(Selective_Process)
+        .getRepository(SelectiveProcess)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.title = :title', { title: search })
@@ -62,17 +62,17 @@ export class selective_processDAO {
 
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to find selective process by title', e)
       return undefined
     }
   }
 
-  async find_selective_process_by_id (id: number): Promise<Selective_Process> {
+  async findSelectiveProcessById (id: number): Promise<SelectiveProcess> {
     try {
       const connection = await createConnection()
 
       const process = await connection
-        .getRepository(Selective_Process)
+        .getRepository(SelectiveProcess)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: id })
@@ -86,12 +86,12 @@ export class selective_processDAO {
     }
   }
 
-  async find_selective_process_of_contractor_by_id(id: number): Promise<Selective_Process[]>{
-    try{
+  async findSelectiveProcessOfContractorById (id: number): Promise<SelectiveProcess[]> {
+    try {
       const connection = await createConnection()
 
       const process = await connection
-        .getRepository(Selective_Process)
+        .getRepository(SelectiveProcess)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.contractor.id = :id', { id: id })
@@ -100,19 +100,18 @@ export class selective_processDAO {
       await connection.close()
 
       return process
-    
-    } catch(e){
-      console.log('error', e)
+    } catch (e) {
+      console.log('Unable to find selective processes of contractor by id', e)
       return undefined
     }
   }
 
-  async find_and_delete_selective_process_by_id (id: Number):Promise<Selective_Process> {
+  async deleteSelectiveProcessById (id: Number):Promise<SelectiveProcess> {
     try {
       const connection = await createConnection()
 
       const process = await connection
-        .getRepository(Selective_Process)
+        .getRepository(SelectiveProcess)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
         .where('process.id = :id', { id: id })
@@ -128,15 +127,15 @@ export class selective_processDAO {
     }
   }
 
-  async update_selective_process (search_id: number, title: string, description: string, deadline: string, method_of_contact: string, contractorId: string) {
+  async updateSelectiveProcess (searchId: number, title: string, description: string, deadline: string, methodOfContact: string, contractorId: string) {
     try {
       const connection = await createConnection()
 
       const process = await connection
-        .getRepository(Selective_Process)
+        .getRepository(SelectiveProcess)
         .createQueryBuilder('process')
         .leftJoinAndSelect('process.contractor', 'contractor')
-        .where('process.id = :id', { id: search_id })
+        .where('process.id = :id', { id: searchId })
         .getOne()
 
       const contractor = await connection
@@ -148,15 +147,15 @@ export class selective_processDAO {
       process.title = title
       process.description = description
       process.deadline = deadline
-      process.method_of_contact = method_of_contact
+      process.methodOfContact = methodOfContact
       process.contractor = contractor
 
-      await connection.manager.getRepository(Selective_Process).save(process)
+      await connection.manager.getRepository(SelectiveProcess).save(process)
 
       await connection.close()
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to update selective process', e)
       return undefined
     }
   }

@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import { Contractor } from './contractor'
 
 @Entity()
-export class Selective_Process {
+export class SelectiveProcess {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -24,9 +24,9 @@ export class Selective_Process {
     @Column({
       length: 64
     })
-    method_of_contact: string;
+    methodOfContact: string;
 
-    @ManyToOne(() => Contractor, contractor => contractor.processes,{
+    @ManyToOne(() => Contractor, contractor => contractor.processes, {
       cascade: true,
       onDelete: 'CASCADE'
     })
