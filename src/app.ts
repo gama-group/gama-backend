@@ -8,7 +8,7 @@ import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
 
-export const app = express()
+const app = express()
 
 app.use(express.json())
 app.use(cors())
@@ -268,3 +268,5 @@ app.post('/login', async (request, response) => {
 
   return response.json({ authorization: genUserToken({ id: contractor.id }) })
 })
+
+export { app }
