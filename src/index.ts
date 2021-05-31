@@ -6,12 +6,15 @@ import { Contractor } from './models/contractor'
 import { genUserToken, authMiddleware, unauthorized } from './helpers/authentication'
 import { SelectiveProcess } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
+import expressHumps from 'express-humps'
 import cors from 'cors'
 
 export const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(expressHumps())
+
 const connection = new ContractorDAO()
 const connectionProcess = new SelectiveProcessDao()
 
@@ -137,7 +140,7 @@ app.get('/processo-seletivo', async (request, response) => {
 
 app.get('/findProcessByTitle', async (request, response) => {
   const { title } = request.query
-  const process = await connectionProcess.findSelectiveProcessByTitle(title)
+  const process = await connectionProcess.findSelectiveProcessByTitle(String(title))
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })

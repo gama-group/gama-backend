@@ -13,8 +13,8 @@ describe('POST/login', () => {
     await request(app).post('/contratante').send({
       email: 'bethesda@zenimax.com',
       cnpj: '11101987654321',
-      companyName: 'Bethesda Softworks',
-      tradeName: 'Bethesda',
+      company_name: 'Bethesda Softworks',
+      trade_name: 'Bethesda',
       password: 'password'
     })
   })
@@ -56,8 +56,8 @@ describe('POST /processo-seletivo', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
   })
@@ -72,7 +72,7 @@ describe('POST /processo-seletivo', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     expect(response.body).toMatchObject({
@@ -80,7 +80,7 @@ describe('POST /processo-seletivo', () => {
       id: 1,
       title: 'title',
       description: 'test',
-      methodOfContact: 'test',
+      method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
     })
@@ -91,7 +91,7 @@ describe('POST /processo-seletivo', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     expect(response.body).toMatchObject({
@@ -109,70 +109,21 @@ describe('GET /findProcessByTitle', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
 
-<<<<<<< HEAD
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
       password: '1234'
     })
-=======
-describe('GET /processo-seletivo', () => {
-    beforeEach(async () => {
-        const connection = await createConnection()
-        await connection.dropDatabase()
-        await connection.close()
-
-        await request(app).post('/contratante').send({
-            email: 'test@test.com.br',
-            cnpj: '12345678900000',
-            company_name: 'Company Name Test',
-            trade_name: 'Trade Name Test',
-            password: '1234'
-        });
-
-        const login = await request(app).post('/login').send({
-            email: 'test@test.com.br',
-            password: '1234',
-        });
-
-        await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
-            title: 'title',
-            description: 'test',
-            deadline: 'test',
-            method_of_contact: 'test'
-        });
-    })
-
-    it('should not be able to find a process if the process does not exist', async () => {
-        const response = await request(app).get('/processo-seletivo').query({
-            id: Number('1234'),
-        })
-
-        expect(response.body).toMatchObject({
-            message: 'process not found',
-        });
-    });
-    it('should be able to find a process', async () => {
-      const response = await request(app).get('/processo-seletivo').query({
-          id: Number('1'),
-      })
-
-      expect(response.body).toMatchObject({
-          message: 'Foi encontrado'
-      });
-  });
-});
->>>>>>> 218782e8b16fd5e71b2db82cc40921d687cbeccb
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
   })
 
@@ -186,7 +137,7 @@ describe('GET /processo-seletivo', () => {
       id: 1,
       title: 'title',
       description: 'test',
-      methodOfContact: 'test',
+      method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
     })
@@ -212,8 +163,8 @@ describe('GET /processo-seletivo/todos', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
   })
@@ -228,14 +179,14 @@ describe('GET /processo-seletivo/todos', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title 2',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     const response = await request(app).get('/processo-seletivo/todos')
@@ -246,14 +197,14 @@ describe('GET /processo-seletivo/todos', () => {
         title: 'title',
         description: 'test',
         deadline: 'test',
-        methodOfContact: 'test'
+        method_of_contact: 'test'
       },
       1: {
         id: 2,
         title: 'title 2',
         description: 'test',
         deadline: 'test',
-        methodOfContact: 'test'
+        method_of_contact: 'test'
       }
     })
   })
@@ -274,8 +225,8 @@ describe('GET /processo-seletivo', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
 
@@ -288,33 +239,26 @@ describe('GET /processo-seletivo', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
-    })
-  })
-
-  it('should be able to find a process by id', async () => {
-    const response = await request(app).get('/processo-seletivo').query({
-      id: 1
-    })
-
-    expect(response.body).toMatchObject({
-      message: 'Foi encontrado',
-      id: 1,
-      title: 'title',
-      description: 'test',
-      methodOfContact: 'test',
-      deadline: 'test',
-      id_contractor: 1
+      method_of_contact: 'test'
     })
   })
 
   it('should not be able to find a process if the process does not exist', async () => {
     const response = await request(app).get('/processo-seletivo').query({
-      id: 1234
+      id: Number('1234')
     })
 
     expect(response.body).toMatchObject({
       message: 'process not found'
+    })
+  })
+  it('should be able to find a process', async () => {
+    const response = await request(app).get('/processo-seletivo').query({
+      id: Number('1')
+    })
+
+    expect(response.body).toMatchObject({
+      message: 'Foi encontrado'
     })
   })
 })
@@ -328,8 +272,8 @@ describe('GET /processo-seletivo/:id', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
 
@@ -342,14 +286,14 @@ describe('GET /processo-seletivo/:id', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title2',
       description: 'test2',
       deadline: 'test2',
-      methodOfContact: 'test2'
+      method_of_contact: 'test2'
     })
   })
 
@@ -363,14 +307,14 @@ describe('GET /processo-seletivo/:id', () => {
           title: 'title',
           description: 'test',
           deadline: 'test',
-          methodOfContact: 'test'
+          method_of_contact: 'test'
         },
         1: {
           id: 2,
           title: 'title2',
           description: 'test2',
           deadline: 'test2',
-          methodOfContact: 'test2'
+          method_of_contact: 'test2'
         }
       }
     )
@@ -380,8 +324,8 @@ describe('GET /processo-seletivo/:id', () => {
     await request(app).post('/contratante').send({
       email: 'test2@test2.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test2',
-      tradeName: 'Trade Name Test2',
+      company_name: 'Company Name Test2',
+      trade_name: 'Trade Name Test2',
       password: '1234'
     })
 
@@ -394,7 +338,7 @@ describe('GET /processo-seletivo/:id', () => {
       title: 'title3',
       description: 'test3',
       deadline: 'test3',
-      methodOfContact: 'test3'
+      method_of_contact: 'test3'
     })
 
     const response = await request(app).get('/processo-seletivo/2')
@@ -406,7 +350,7 @@ describe('GET /processo-seletivo/:id', () => {
           title: 'title3',
           description: 'test3',
           deadline: 'test3',
-          methodOfContact: 'test3'
+          method_of_contact: 'test3'
         }
       }
     )
@@ -432,8 +376,8 @@ describe('DELETE /processo-seletivo', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
   })
@@ -448,7 +392,7 @@ describe('DELETE /processo-seletivo', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
 
     const response = await request(app).delete('/processo-seletivo/1').set('Authorization', login.body.authorization)
@@ -457,7 +401,7 @@ describe('DELETE /processo-seletivo', () => {
       message: 'Foi removido',
       title: 'title',
       description: 'test',
-      methodOfContact: 'test',
+      method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
     })
@@ -496,8 +440,8 @@ describe('PUT /processo-seletivo', () => {
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
       cnpj: '12345678900000',
-      companyName: 'Company Name Test',
-      tradeName: 'Trade Name Test',
+      company_name: 'Company Name Test',
+      trade_name: 'Trade Name Test',
       password: '1234'
     })
 
@@ -510,7 +454,7 @@ describe('PUT /processo-seletivo', () => {
       title: 'title',
       description: 'test',
       deadline: 'test',
-      methodOfContact: 'test'
+      method_of_contact: 'test'
     })
   })
 
@@ -524,7 +468,7 @@ describe('PUT /processo-seletivo', () => {
       title: 'new title',
       description: '',
       deadline: 'deadline',
-      methodOfContact: ''
+      method_of_contact: ''
     })
 
     expect(response.body).toMatchObject({
@@ -532,7 +476,7 @@ describe('PUT /processo-seletivo', () => {
       id: 1,
       title: 'new title',
       description: '',
-      methodOfContact: '',
+      method_of_contact: '',
       deadline: 'deadline',
       id_contractor: 1
     })
@@ -548,7 +492,7 @@ describe('PUT /processo-seletivo', () => {
       title: 'new title',
       description: '',
       deadline: 'deadline',
-      methodOfContact: ''
+      method_of_contact: ''
     })
 
     expect(response.body).toMatchObject({
@@ -561,7 +505,7 @@ describe('PUT /processo-seletivo', () => {
       title: 'new title',
       description: '',
       deadline: 'deadline',
-      methodOfContact: ''
+      method_of_contact: ''
     })
 
     expect(response.body).toMatchObject({
@@ -571,7 +515,6 @@ describe('PUT /processo-seletivo', () => {
 })
 
 describe('POST /contratante', () => {
-<<<<<<< HEAD
   beforeEach(async () => {
     const connection = await createConnection()
     await connection.dropDatabase()
@@ -581,16 +524,16 @@ describe('POST /contratante', () => {
     const response = await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
 
     expect(response.body).toMatchObject({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America'
+      company_name: 'America',
+      trade_name: 'America'
     })
   })
 
@@ -598,16 +541,16 @@ describe('POST /contratante', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
 
     const response1 = await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
 
@@ -635,307 +578,13 @@ describe('GET /contratante', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
     const response = await request(app).get('/contratante?email=america@company.com')
     expect(response.body).toMatchObject({
       message: 'Foi encontrado'
-=======
-    beforeEach(async () => {
-      const connection = await createConnection()
-      await connection.dropDatabase()
-      await connection.close()
-    })
-    it('should add sucessfuly contractor', async () => {
-      const response = await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-
-      expect(response.body).toMatchObject({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America'
-      })
-    })
-
-    it('shouldnt be able to add existing contractor', async () => {
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-
-      const response1 = await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-
-      expect(response1.body).toMatchObject({
-        message: 'Unable to create user.'
-      })
-    })
-  })
-
-  describe('GET /contratante', () => {
-    beforeEach(async () => {
-      const connection = await createConnection()
-      await connection.dropDatabase()
-      await connection.close()
-    })
-
-    it('shouldnt find someone', async () => {
-      const response = await request(app).get('/contratante?email=america@company.com')
-      expect(response.body).toMatchObject({
-        message: 'contractor not found'
-      })
-    })
-
-    it('should find someone', async () => {
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-      const response = await request(app).get('/contratante?email=america@company.com')
-      expect(response.body).toMatchObject({
-        message: 'Foi encontrado'
-      })
-    })
-    it('should fail because missing query', async () => {
-      const response = await request(app).get('/contratante')
-      expect(response.body).toMatchObject({
-        'bad request': 'email is not a string'
-      })
-    })
-  })
-
-  describe('GET /contratante/todos', () => {
-    beforeEach(async () => {
-      const connection = await createConnection()
-      await connection.dropDatabase()
-      await connection.close()
-    })
-    it('should find everyone', async () => {
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'facebook@company.com',
-        cnpj: '12345678910111',
-        company_name: 'Facebook Corp',
-        trade_name: 'Facebook',
-        password: '123'
-      })
-      const response = await request(app).get('/contratante/todos')
-      expect(Object.keys(response.body).length).toBe(2)
-    })
-  })
-
-  describe('DELETE /contratante/:email', () => {
-    beforeEach(async () => {
-      const connection = await createConnection()
-      await connection.dropDatabase()
-      await connection.close()
-      await request(app).post('/contratante').send({
-        email: 'facebook@company.com',
-        cnpj: '12345678910111',
-        company_name: 'Facebook Corp',
-        trade_name: 'Facebook',
-        password: '123'
-      })
-    })
-    it('shouldnt allow removal because unauthorized acess', async () => {
-      const response = await request(app).delete('/contratante/america@company.com')
-
-      expect(response.body).toMatchObject({
-        message: 'Unauthorized'
-      })
-    })
-
-    it('shouldnt allow removal because dont exists contractor looked for', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'facebook@company.com',
-        password: '123'
-      })
-
-      const response = await request(app).delete('/contratante/america@company.com').set('Authorization', login.body.authorization)
-      expect(response.body).toMatchObject({
-        message: 'Contractor not found'
-      })
-    })
-
-    it('shouldnt allow removal because user dont have credentials to remove', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'facebook@company.com',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'amazon@company.com',
-        cnpj: '12345678910111',
-        company_name: 'Amazon Enterprise',
-        trade_name: 'AmaZon',
-        password: '123'
-      })
-      const response = await request(app).delete('/contratante/america@company.com').set('Authorization', login.body.authorization)
-      expect(response.body).toMatchObject({message: 'Unauthorized'})
-    })
-
-    it('should remove successfully', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'facebook@company.com',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'amazon@company.com',
-        cnpj: '12345678910111',
-        company_name: 'Amazon Enterprise',
-        trade_name: 'AmaZon',
-        password: '123'
-      })
-      const response = await request(app).delete('/contratante/facebook@company.com').set('Authorization', login.body.authorization)
-      expect(response.body).toMatchObject({ message: 'Foi Removido' })
-    })
-  })
-
-  describe('PUT /update', () => {
-    beforeEach(async () => {
-      const connection = await createConnection()
-      await connection.dropDatabase()
-      await connection.close()
-      await request(app).post('/contratante').send({
-        email: 'america@company.com',
-        cnpj: '12345678910111',
-        company_name: 'America',
-        trade_name: 'America',
-        password: '123'
-      })
-      await request(app).post('/contratante').send({
-        email: 'facebook@company.com',
-        cnpj: '12345678910111',
-        company_name: 'Facebook Corp',
-        trade_name: 'Facebook',
-        password: '123'
-      })
-    })
-    it('should update successfully contractor', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'america@company.com',
-        password: '123'
-      })
-
-      const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
-        email: 'americana@company.com.br',
-        cnpj: '12345678900001',
-        company_name: 'Americana',
-        trade_name: 'Americana Company',
-        password: '123abc'
-      })
-
-      expect(response.body).toMatchObject({
-        message: 'Foi atualizado'
-      })
-    })
-
-    it('should update successfully contractor with same password', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'america@company.com',
-        password: '123'
-      })
-
-      const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
-        email: 'americana@company.com.br',
-        cnpj: '12345678900001',
-        company_name: 'Americana',
-        trade_name: 'Americana Company',
-        password: '123'
-      })
-
-      expect(response.body).toMatchObject({
-        message: 'Foi atualizado'
-      })
-    })
-
-    it('shouldnt update contractor because credentials didnt match', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'america@company.com',
-        password: '123'
-      })
-
-      const response = await request(app).put('/contratante/facebook@company.com').set('Authorization', login.body.authorization).send({
-        email: 'americana@company.com.br',
-        cnpj: '12345678900001',
-        company_name: 'Americana',
-        trade_name: 'Americana Company',
-        password: '123abc'
-      })
-
-      expect(response.body).toMatchObject({
-        message: 'Unauthorized'
-      })
-    })
-
-    it('shouldnt update because unauthorized acess', async () => {
-      const response = await request(app).put('/contratante/america@company.com').send({
-        email: 'americana@company.com.br',
-        cnpj: '12345678900001',
-        company_name: 'Americana',
-        trade_name: 'Americana Company',
-        password: '123abc'
-      })
-      expect(response.body).toMatchObject({
-        message: 'Unauthorized'
-      })
-    })
-
-    it('shouldnt update because contractor wasnt inserted', async () => {
-      const login = await request(app).post('/login').send({
-        email: 'facebook@company.com',
-        password: '123'
-      })
-
-      const response = await request(app).put('/contratante/tesla@company.com').set('Authorization', login.body.authorization).send({
-        email: 'tesla.motors@company.com.br',
-        cnpj: '12345678900001',
-        company_name: 'Tesla Motors',
-        trade_name: 'Tesla Motors Company',
-        password: '123abc'
-      })
-      expect(response.body).toMatchObject({
-        message: 'Contractor not found'
-      })
->>>>>>> 218782e8b16fd5e71b2db82cc40921d687cbeccb
     })
   })
   it('should fail because missing query', async () => {
@@ -956,15 +605,15 @@ describe('GET /contratante/todos', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
     await request(app).post('/contratante').send({
       email: 'facebook@company.com',
       cnpj: '12345678910111',
-      companyName: 'Facebook Corp',
-      tradeName: 'Facebook',
+      company_name: 'Facebook Corp',
+      trade_name: 'Facebook',
       password: '123'
     })
     const response = await request(app).get('/contratante/todos')
@@ -980,8 +629,8 @@ describe('DELETE /contratante/:email', () => {
     await request(app).post('/contratante').send({
       email: 'facebook@company.com',
       cnpj: '12345678910111',
-      companyName: 'Facebook Corp',
-      tradeName: 'Facebook',
+      company_name: 'Facebook Corp',
+      trade_name: 'Facebook',
       password: '123'
     })
   })
@@ -1013,15 +662,15 @@ describe('DELETE /contratante/:email', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
     await request(app).post('/contratante').send({
       email: 'amazon@company.com',
       cnpj: '12345678910111',
-      companyName: 'Amazon Enterprise',
-      tradeName: 'AmaZon',
+      company_name: 'Amazon Enterprise',
+      trade_name: 'AmaZon',
       password: '123'
     })
     const response = await request(app).delete('/contratante/america@company.com').set('Authorization', login.body.authorization)
@@ -1036,15 +685,15 @@ describe('DELETE /contratante/:email', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
     await request(app).post('/contratante').send({
       email: 'amazon@company.com',
       cnpj: '12345678910111',
-      companyName: 'Amazon Enterprise',
-      tradeName: 'AmaZon',
+      company_name: 'Amazon Enterprise',
+      trade_name: 'AmaZon',
       password: '123'
     })
     const response = await request(app).delete('/contratante/facebook@company.com').set('Authorization', login.body.authorization)
@@ -1060,15 +709,15 @@ describe('PUT /update', () => {
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',
-      companyName: 'America',
-      tradeName: 'America',
+      company_name: 'America',
+      trade_name: 'America',
       password: '123'
     })
     await request(app).post('/contratante').send({
       email: 'facebook@company.com',
       cnpj: '12345678910111',
-      companyName: 'Facebook Corp',
-      tradeName: 'Facebook',
+      company_name: 'Facebook Corp',
+      trade_name: 'Facebook',
       password: '123'
     })
   })
@@ -1081,9 +730,28 @@ describe('PUT /update', () => {
     const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
-      companyName: 'Americana',
-      tradeName: 'Americana Company',
+      company_name: 'Americana',
+      trade_name: 'Americana Company',
       password: '123abc'
+    })
+
+    expect(response.body).toMatchObject({
+      message: 'Foi atualizado'
+    })
+  })
+
+  it('should update successfully contractor with same password', async () => {
+    const login = await request(app).post('/login').send({
+      email: 'america@company.com',
+      password: '123'
+    })
+
+    const response = await request(app).put('/contratante/america@company.com').set('Authorization', login.body.authorization).send({
+      email: 'americana@company.com.br',
+      cnpj: '12345678900001',
+      company_name: 'Americana',
+      trade_name: 'Americana Company',
+      password: '123'
     })
 
     expect(response.body).toMatchObject({
@@ -1100,8 +768,8 @@ describe('PUT /update', () => {
     const response = await request(app).put('/contratante/facebook@company.com').set('Authorization', login.body.authorization).send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
-      companyName: 'Americana',
-      tradeName: 'Americana Company',
+      company_name: 'Americana',
+      trade_name: 'Americana Company',
       password: '123abc'
     })
 
@@ -1114,8 +782,8 @@ describe('PUT /update', () => {
     const response = await request(app).put('/contratante/america@company.com').send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
-      companyName: 'Americana',
-      tradeName: 'Americana Company',
+      company_name: 'Americana',
+      trade_name: 'Americana Company',
       password: '123abc'
     })
     expect(response.body).toMatchObject({
@@ -1132,8 +800,8 @@ describe('PUT /update', () => {
     const response = await request(app).put('/contratante/tesla@company.com').set('Authorization', login.body.authorization).send({
       email: 'tesla.motors@company.com.br',
       cnpj: '12345678900001',
-      companyName: 'Tesla Motors',
-      tradeName: 'Tesla Motors Company',
+      company_name: 'Tesla Motors',
+      trade_name: 'Tesla Motors Company',
       password: '123abc'
     })
     expect(response.body).toMatchObject({
