@@ -2,7 +2,7 @@ import request from 'supertest';
 import { validate as isUuid } from 'uuid';
 import { genUserToken, authMiddleware, unauthorized } from '../helpers/authentication'
 import { Connection, ConnectionManager, createConnection } from 'typeorm'
-import { app } from '../index';
+import { app } from '../app';
 
 describe('POST/login', () => {
   beforeEach(async () =>{
