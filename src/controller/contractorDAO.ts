@@ -80,7 +80,7 @@ export class ContractorDAO {
 
       return contractor
     } catch (e) {
-      console.log('error')
+      console.log('Unable to find contractors', e)
       return undefined
     }
   }
@@ -100,7 +100,7 @@ export class ContractorDAO {
 
       return contractor
     } catch (e) {
-      console.log('error', e)
+      console.log('Unable to find and delete contractor', e)
       return undefined
     }
   }

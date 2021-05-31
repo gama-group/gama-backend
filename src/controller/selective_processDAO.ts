@@ -28,7 +28,7 @@ export class SelectiveProcessDao {
 
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to add selective process', e)
       return undefined
     }
   }
@@ -42,7 +42,7 @@ export class SelectiveProcessDao {
       await connection.close()
       return processes
     } catch (e) {
-      console.log('error')
+      console.log('Unable to find all selective processes', e)
       return undefined
     }
   }
@@ -62,7 +62,7 @@ export class SelectiveProcessDao {
 
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to find selective process by title', e)
       return undefined
     }
   }
@@ -101,7 +101,7 @@ export class SelectiveProcessDao {
 
       return process
     } catch (e) {
-      console.log('error', e)
+      console.log('Unable to find selective processes of contractor by id', e)
       return undefined
     }
   }
@@ -155,7 +155,7 @@ export class SelectiveProcessDao {
       await connection.close()
       return process
     } catch (e) {
-      console.log('error')
+      console.log('Unable to update selective process', e)
       return undefined
     }
   }

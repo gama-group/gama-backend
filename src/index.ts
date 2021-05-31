@@ -182,7 +182,6 @@ app.post('/processo-seletivo', async (request, response) => {
   let process = new SelectiveProcess()
   process = await connectionProcess.addSelectiveProcess(title, description, deadline, methodOfContact, contractorId)
 
-  console.log('nos process is here', process)
   if (process === undefined) {
     return response.json({ message: 'process not found' })// create test
   }
