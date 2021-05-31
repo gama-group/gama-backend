@@ -1,4 +1,5 @@
 import { Contractor } from '../models/contractor'
+import { SourceMap } from 'module'
 import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
 import { getDBConnection } from '../helpers/connection_manager'
@@ -116,6 +117,7 @@ export class contractorDAO {
       return contractor
     } catch (e) {
       console.log('Error: Unable to update contractor. ', e)
+      await connection.close()
       return undefined
     }
   }

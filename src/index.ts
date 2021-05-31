@@ -7,11 +7,13 @@ import { genUserToken, authMiddleware, unauthorized } from './helpers/authentica
 import { Selective_Process } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import cors from 'cors'
+import { createDBConnection } from './helpers/connection_manager'
 
 export const app = express()
 
 app.use(express.json())
 app.use(cors())
+
 const connection = new contractorDAO()
 const connection_process = new selective_processDAO()
 
