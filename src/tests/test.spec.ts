@@ -1,14 +1,17 @@
 import request from 'supertest'
 import { validate as isUuid } from 'uuid'
 import { genUserToken, authMiddleware, unauthorized } from '../helpers/authentication'
-import { Connection, ConnectionManager, createConnection } from 'typeorm'
-import { app } from '../app';
+import { Connection, ConnectionManager, createConnection, getConnection } from 'typeorm'
+import { app } from '../app'
+import { getDBConnection } from '../helpers/connection_manager'
 
+let connection: Connection
 describe('POST/login', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'bethesda@zenimax.com',
@@ -48,10 +51,11 @@ describe('POST/login', () => {
 })
 
 describe('POST /processo-seletivo', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -101,10 +105,11 @@ describe('POST /processo-seletivo', () => {
 })
 
 describe('GET /findProcessByTitle', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -155,10 +160,11 @@ describe('GET /findProcessByTitle', () => {
 })
 
 describe('GET /processo-seletivo/todos', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -217,10 +223,11 @@ describe('GET /processo-seletivo/todos', () => {
 })
 
 describe('GET /processo-seletivo', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -264,10 +271,11 @@ describe('GET /processo-seletivo', () => {
 })
 
 describe('GET /processo-seletivo/:id', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -368,10 +376,11 @@ describe('GET /processo-seletivo/:id', () => {
 })
 
 describe('DELETE /processo-seletivo', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -432,10 +441,11 @@ describe('DELETE /processo-seletivo', () => {
 })
 
 describe('PUT /processo-seletivo', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
 
     await request(app).post('/contratante').send({
       email: 'test@test.com.br',
@@ -515,10 +525,11 @@ describe('PUT /processo-seletivo', () => {
 })
 
 describe('POST /contratante', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
   })
   it('should add sucessfuly contractor', async () => {
     const response = await request(app).post('/contratante').send({
@@ -561,10 +572,11 @@ describe('POST /contratante', () => {
 })
 
 describe('GET /contratante', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
   })
 
   it('shouldnt find someone', async () => {
@@ -596,10 +608,11 @@ describe('GET /contratante', () => {
 })
 
 describe('GET /contratante/todos', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
   })
   it('should find everyone', async () => {
     await request(app).post('/contratante').send({
@@ -622,10 +635,11 @@ describe('GET /contratante/todos', () => {
 })
 
 describe('DELETE /contratante/:email', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
     await request(app).post('/contratante').send({
       email: 'facebook@company.com',
       cnpj: '12345678910111',
@@ -702,10 +716,11 @@ describe('DELETE /contratante/:email', () => {
 })
 
 describe('PUT /update', () => {
+  beforeAll(async () => {
+    connection = await getDBConnection()
+  })
   beforeEach(async () => {
-    const connection = await createConnection()
-    await connection.dropDatabase()
-    await connection.close()
+    await connection.synchronize(true)
     await request(app).post('/contratante').send({
       email: 'america@company.com',
       cnpj: '12345678910111',

@@ -1,11 +1,11 @@
 import { Contractor } from '../models/contractor'
 import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
-import { createConnection } from 'typeorm'
+import { getDBConnection } from '../helpers/connection_manager'
 
 export class ContractorDAO {
   async addContractor (email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
-    const connection = await createConnection()
+    const connection = await getDBConnection()
     const pwHandler = new PasswordHandler()
     let contractor
 
@@ -28,23 +28,17 @@ export class ContractorDAO {
       console.log('Unable to add contractor: ', e)
       contractor = null
     }
-
-    await connection.close()
     return contractor
   }
 
   async findContractor (search: string):Promise<Contractor> {
     try {
-      const connection = await createConnection()
-
+      const connection = await getDBConnection()
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
         .where('contractor.email = :email', { email: search })
         .getOne()
-
-      await connection.close()
-
       return contractor
     } catch (e) {
       console.log('Error: Unable to find contractor.', e)
@@ -54,15 +48,13 @@ export class ContractorDAO {
 
   async findContractorById (id: string):Promise<Contractor> {
     try {
-      const connection = await createConnection()
+      const connection = await getDBConnection()
 
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
         .where('contractor.id = :id', { id })
         .getOne()
-
-      await connection.close()
 
       return contractor
     } catch (e) {
@@ -73,11 +65,9 @@ export class ContractorDAO {
 
   async findAllContractors ():Promise<Contractor[]> {
     try {
-      const connection = await createConnection()
+      const connection = await getDBConnection()
 
       const contractor = await connection.manager.find(Contractor)
-      await connection.close()
-
       return contractor
     } catch (e) {
       console.log('Unable to find contractors', e)
@@ -87,7 +77,7 @@ export class ContractorDAO {
 
   async findAndDeleteContractor (search: string):Promise<Contractor> {
     try {
-      const connection = await createConnection()
+      const connection = await getDBConnection()
 
       const contractor = await connection
         .getRepository(Contractor)
@@ -96,7 +86,6 @@ export class ContractorDAO {
         .getOne()
 
       await connection.manager.remove(contractor)
-      await connection.close()
 
       return contractor
     } catch (e) {
@@ -108,7 +97,7 @@ export class ContractorDAO {
   async updateContractor (searchEmail: string, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
     let connection
     try {
-      connection = await createConnection()
+      connection = await getDBConnection()
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
@@ -123,11 +112,9 @@ export class ContractorDAO {
       contractor.password = await pwHandler.updatePassword(contractor.password, password)
 
       await connection.manager.getRepository(Contractor).save(contractor)
-      await connection.close()
       return contractor
     } catch (e) {
       console.log('Error: Unable to update contractor. ', e)
-      await connection.close()
       return undefined
     }
   }
