@@ -116,12 +116,12 @@ Success:
 {
         status: 200,
         body: {
-                "message": "Foi encontrado",
-                "email": contractor.email,
-                "password": contractor.password,
-                "cnpj": contractor.cnpj,
-                "company name": contractor.company_name,
-                "trade name": contractor.trade_name
+                message: "Foi encontrado",
+                email: contractor.email,
+                password: contractor.password,
+                cnpj: contractor.cnpj,
+                company_name: contractor.company_name,
+                trade_name: contractor.trade_name
         }
 }
 ```
@@ -203,12 +203,12 @@ A json with an successful message and deleted contractor's data
 
 ```js
 {
-        "message": "Foi removido.",
-        "email": contractor.email,
-        "password": contractor.password,
-        "cnpj": contractor.cnpj,
-        "company name": contractor.company_name,
-        "trade name": contractor.trade_name
+        message: "Foi removido.",
+        email: contractor.email,
+        password: contractor.password,
+        cnpj: contractor.cnpj,
+        company_name: contractor.company_name,
+        trade_name: contractor.trade_name
 }
 ```
 
@@ -264,12 +264,12 @@ A json with an successful message and updated contractor's data
 
 ```js
 {
-        "message": "Foi atualizado",
-        "email": contractor.email,
-        "password": contractor.password,
-        "cnpj": contractor.cnpj,
-        "company name": contractor.company_name,
-        "trade name": contractor.trade_name
+        message: "Foi atualizado",
+        email: contractor.email,
+        password: contractor.password,
+        cnpj: contractor.cnpj,
+        company_name: contractor.company_name,
+        trade_name: contractor.trade_name
 }
 ```
 

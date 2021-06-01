@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
-import { Selective_Process } from './selective_process'
+import { SelectiveProcess } from './selective_process'
 
 @Entity()
 export class Contractor {
@@ -18,18 +18,18 @@ export class Contractor {
     @Column({
       length: 128
     })
-    company_name: string;
+    companyName: string;
 
     @Column({
       length: 128
     })
-    trade_name: string;
+    tradeName: string;
 
     @Column({
       length: 14
     })
     cnpj: string;
 
-    @OneToMany(() => Selective_Process, process => process.contractor)
-    processes: Selective_Process[];
+    @OneToMany(() => SelectiveProcess, process => process.contractor)
+    processes: SelectiveProcess[];
 }

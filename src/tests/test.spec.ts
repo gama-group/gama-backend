@@ -1,13 +1,13 @@
-import request from 'supertest';
-import { validate as isUuid } from 'uuid';
+import request from 'supertest'
+import { validate as isUuid } from 'uuid'
 import { genUserToken, authMiddleware, unauthorized } from '../helpers/authentication'
 import { Connection, ConnectionManager, createConnection, getConnection } from 'typeorm'
-import { app } from '../index';
-import { getDBConnection } from '../helpers/connection_manager';
+import { app } from '../app'
+import { getDBConnection } from '../helpers/connection_manager'
 
 let connection: Connection
 describe('POST/login', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -51,7 +51,7 @@ describe('POST/login', () => {
 })
 
 describe('POST /processo-seletivo', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -63,21 +63,21 @@ describe('POST /processo-seletivo', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
   })
 
   it('should be able to create a new process', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     const response = await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     expect(response.body).toMatchObject({
       message: 'Foi inserido',
@@ -87,8 +87,8 @@ describe('POST /processo-seletivo', () => {
       method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
-    });
-  });
+    })
+  })
 
   it('should not be able to create a new process without authorization', async () => {
     const response = await request(app).post('/processo-seletivo').send({
@@ -96,16 +96,16 @@ describe('POST /processo-seletivo', () => {
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     expect(response.body).toMatchObject({
-      message: 'Unauthorized',
-    });
-  });
-});
+      message: 'Unauthorized'
+    })
+  })
+})
 
 describe('GET /findProcessByTitle', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -117,19 +117,19 @@ describe('GET /findProcessByTitle', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
 
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
   })
 
   it('should be able to find a process by title', async () => {
@@ -145,8 +145,8 @@ describe('GET /findProcessByTitle', () => {
       method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
-    });
-  });
+    })
+  })
 
   it('should not be able to find a process by title if the process does not exist', async () => {
     const response = await request(app).get('/findProcessByTitle').query({
@@ -156,11 +156,11 @@ describe('GET /findProcessByTitle', () => {
     expect(response.body).toMatchObject({
       message: 'process not found'
     })
-  });
-});
+  })
+})
 
 describe('GET /processo-seletivo/todos', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -172,58 +172,58 @@ describe('GET /processo-seletivo/todos', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
   })
 
   it('should be able to find all process', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title 2',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     const response = await request(app).get('/processo-seletivo/todos')
 
     expect(response.body).toMatchObject({
-      '0': {
+      0: {
         id: 1,
         title: 'title',
         description: 'test',
         deadline: 'test',
         method_of_contact: 'test'
       },
-      '1': {
+      1: {
         id: 2,
         title: 'title 2',
         description: 'test',
         deadline: 'test',
         method_of_contact: 'test'
       }
-    });
-  });
+    })
+  })
 
   it('should find any process', async () => {
     const response = await request(app).get('/processo-seletivo/todos')
 
-    expect(response.body).toMatchObject({});
-  });
-});
+    expect(response.body).toMatchObject({})
+  })
+})
 
 describe('GET /processo-seletivo', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -235,43 +235,43 @@ describe('GET /processo-seletivo', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
 
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
   })
 
   it('should not be able to find a process if the process does not exist', async () => {
     const response = await request(app).get('/processo-seletivo').query({
-      id: Number('1234'),
+      id: Number('1234')
     })
 
     expect(response.body).toMatchObject({
-      message: 'process not found',
-    });
-  });
+      message: 'process not found'
+    })
+  })
   it('should be able to find a process', async () => {
     const response = await request(app).get('/processo-seletivo').query({
-      id: Number('1'),
+      id: Number('1')
     })
 
     expect(response.body).toMatchObject({
       message: 'Foi encontrado'
-    });
-  });
-});
+    })
+  })
+})
 
 describe('GET /processo-seletivo/:id', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -283,26 +283,26 @@ describe('GET /processo-seletivo/:id', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
 
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title2',
       description: 'test2',
       deadline: 'test2',
       method_of_contact: 'test2'
-    });
+    })
   })
 
   it('should be able to get process by contractor id', async () => {
@@ -310,59 +310,58 @@ describe('GET /processo-seletivo/:id', () => {
 
     expect(response.body).toMatchObject(
       {
-        "0": {
-          "id": 1,
-          "title": "title",
-          "description": "test",
-          "deadline": "test",
-          "method_of_contact": "test"
+        0: {
+          id: 1,
+          title: 'title',
+          description: 'test',
+          deadline: 'test',
+          method_of_contact: 'test'
         },
-        "1": {
-          "id": 2,
-          "title": "title2",
-          "description": "test2",
-          "deadline": "test2",
-          "method_of_contact": "test2"
+        1: {
+          id: 2,
+          title: 'title2',
+          description: 'test2',
+          deadline: 'test2',
+          method_of_contact: 'test2'
         }
       }
-    );
+    )
   })
 
   it('should be able to get process by contractor id 2', async () => {
-
     await request(app).post('/contratante').send({
       email: 'test2@test2.com.br',
       cnpj: '12345678900000',
       company_name: 'Company Name Test2',
       trade_name: 'Trade Name Test2',
       password: '1234'
-    });
+    })
 
     const login2 = await request(app).post('/login').send({
       email: 'test2@test2.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login2.body.authorization).send({
       title: 'title3',
       description: 'test3',
       deadline: 'test3',
       method_of_contact: 'test3'
-    });
+    })
 
     const response = await request(app).get('/processo-seletivo/2')
 
     expect(response.body).toMatchObject(
       {
-        "0": {
-          "id": 3,
-          "title": "title3",
-          "description": "test3",
-          "deadline": "test3",
-          "method_of_contact": "test3"
+        0: {
+          id: 3,
+          title: 'title3',
+          description: 'test3',
+          deadline: 'test3',
+          method_of_contact: 'test3'
         }
       }
-    );
+    )
   })
 
   it('should return a empty list', async () => {
@@ -372,12 +371,12 @@ describe('GET /processo-seletivo/:id', () => {
 
     expect(response.body).toMatchObject(
       {}
-    );
+    )
   })
 })
 
 describe('DELETE /processo-seletivo', () => {
-    beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -389,21 +388,21 @@ describe('DELETE /processo-seletivo', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
   })
 
   it('should be able to remove a process', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
 
     const response = await request(app).delete('/processo-seletivo/1').set('Authorization', login.body.authorization)
 
@@ -414,21 +413,21 @@ describe('DELETE /processo-seletivo', () => {
       method_of_contact: 'test',
       deadline: 'test',
       id_contractor: 1
-    });
-  });
+    })
+  })
 
   it('should not be able to remove a process if the process does not exist', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     const response = await request(app).delete('/processo-seletivo').set('Authorization', login.body.authorization).send({
       id: 123
     })
 
     expect(response.body).toEqual({})
-  });
+  })
 
   it('should not be able to remove a process without authorization', async () => {
     const response = await request(app).delete('/processo-seletivo').send({
@@ -438,11 +437,11 @@ describe('DELETE /processo-seletivo', () => {
     expect(response.body).toMatchObject({
       message: 'Unauthorized'
     })
-  });
-});
+  })
+})
 
 describe('PUT /processo-seletivo', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -454,33 +453,33 @@ describe('PUT /processo-seletivo', () => {
       company_name: 'Company Name Test',
       trade_name: 'Trade Name Test',
       password: '1234'
-    });
+    })
 
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     await request(app).post('/processo-seletivo').set('Authorization', login.body.authorization).send({
       title: 'title',
       description: 'test',
       deadline: 'test',
       method_of_contact: 'test'
-    });
+    })
   })
 
   it('should be able to update a process', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     const response = await request(app).put('/processo-seletivo/1').set('Authorization', login.body.authorization).send({
       title: 'new title',
       description: '',
       deadline: 'deadline',
       method_of_contact: ''
-    });
+    })
 
     expect(response.body).toMatchObject({
       message: 'Foi atualizado',
@@ -491,25 +490,25 @@ describe('PUT /processo-seletivo', () => {
       deadline: 'deadline',
       id_contractor: 1
     })
-  });
+  })
 
   it('should not be able to update a process if the process does not exist', async () => {
     const login = await request(app).post('/login').send({
       email: 'test@test.com.br',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
     const response = await request(app).put('/processo-seletivo/456').set('Authorization', login.body.authorization).send({
       title: 'new title',
       description: '',
       deadline: 'deadline',
       method_of_contact: ''
-    });
+    })
 
     expect(response.body).toMatchObject({
       message: 'process not found'
     })
-  });
+  })
 
   it('should not be able to update a process without authorization', async () => {
     const response = await request(app).put('/processo-seletivo/1').send({
@@ -517,16 +516,16 @@ describe('PUT /processo-seletivo', () => {
       description: '',
       deadline: 'deadline',
       method_of_contact: ''
-    });
+    })
 
     expect(response.body).toMatchObject({
       message: 'Unauthorized'
     })
-  });
-});
+  })
+})
 
 describe('POST /contratante', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -573,7 +572,7 @@ describe('POST /contratante', () => {
 })
 
 describe('GET /contratante', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -609,7 +608,7 @@ describe('GET /contratante', () => {
 })
 
 describe('GET /contratante/todos', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -636,7 +635,7 @@ describe('GET /contratante/todos', () => {
 })
 
 describe('DELETE /contratante/:email', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
@@ -717,7 +716,7 @@ describe('DELETE /contratante/:email', () => {
 })
 
 describe('PUT /update', () => {
-  beforeAll(async () =>{
+  beforeAll(async () => {
     connection = await getDBConnection()
   })
   beforeEach(async () => {
