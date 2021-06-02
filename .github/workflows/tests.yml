@@ -7,6 +7,13 @@ jobs:
       PORT: 3333
       BCRYPT_SALT_ROUNDS: 10
       JWT_SECRET_KEY: 12345467890
+      TYPEORM_PORT: 3333
+      DB_TYPE: sqlite
+      DB_HOST: localhost
+      DB_PORT: 3333
+      DB_USER: test
+      DB_PASSWORD: test
+      DB_DATABASE: db
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
