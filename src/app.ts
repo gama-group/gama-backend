@@ -16,16 +16,17 @@ app.use(express.json())
 app.use(cors())
 app.use(expressHumps())
 
+
 const connection = new ContractorDAO()
 const connectionProcess = new SelectiveProcessDao()
 
 app.post('/contratante', celebrate({
       [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().max(64).required(),
-        cnpj: Joi.string().min(14).max(14).required(),
+        email: Joi.string().trim().email().required(),
+        cnpj: Joi.string().min(14).max(14).pattern(/^[0-9]+$/).required(),
         companyName: Joi.string().max(128).required(),
         tradeName: Joi.string().max(128).required(),
-        password: Joi.string().required()
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
       }),
   }), async (request, response) => {
   const { email, cnpj, companyName, tradeName, password } = request.body
@@ -51,7 +52,7 @@ app.post('/contratante', celebrate({
 
 app.get('/contratante', celebrate({
       [Segments.QUERY]: Joi.object().keys({
-        email: Joi.string().max(64).required()
+        email: Joi.string().trim().email().required()
       }),
   }), async (request, response) => {
   const { email } = request.query
@@ -86,7 +87,7 @@ app.get('/contratante/todos', async (request, response) => {
 app.use('/contratante', authMiddleware)
 app.delete('/contratante/:email', celebrate({
       [Segments.PARAMS]: Joi.object().keys({
-        email: Joi.string().max(64).required()
+        email: Joi.string().trim().email().required()
       }),
   }), async (request, response) => {
   const { email } = request.params
@@ -110,23 +111,31 @@ app.delete('/contratante/:email', celebrate({
 app.use('/contratante', authMiddleware)
 app.put('/contratante/:searchEmail', celebrate({
       [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().max(64).required(),
-        cnpj: Joi.string().min(14).max(14).required(),
+        email: Joi.string().trim().email().required(),
+        cnpj: Joi.string().min(14).max(14).pattern(/^[0-9]+$/).required(),
         companyName: Joi.string().max(128).required(),
         tradeName: Joi.string().max(128).required(),
-        password: Joi.string().required()
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
       }),
       [Segments.PARAMS]: Joi.object().keys({
-          searchEmail: Joi.string().max(64).required()
+          searchEmail: Joi.string().trim().email().required()
       })
   }), async (request, response) => {
   const { searchEmail } = request.params
   let contractor = await connection.findContractor(searchEmail)
+
+
   if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
   if (contractor.id !== response.locals.session.id) return unauthorized(response)
 
   const { email, cnpj, companyName, tradeName, password } = request.body
+
+  if(await connection.findContractor(email)) {
+      return response.status(403).json({message: 'Invalid email'})
+  }
+
   contractor = await connection.updateContractor(searchEmail, email, cnpj, companyName, tradeName, password)
+
 
   const json = {
     message: 'Foi atualizado',
@@ -315,8 +324,8 @@ app.put('/processo-seletivo/:id', celebrate({
 
 app.post('/login', celebrate({
       [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().max(64).required(),
-        password: Joi.string().required()
+        email: Joi.string().trim().email().required(),
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
       }),
   }), async (request, response) => {
   const { email, password } = request.body
@@ -333,4 +342,5 @@ app.post('/login', celebrate({
   return response.json({ authorization: genUserToken({ id: contractor.id }) })
 })
 
+app.use(errors())
 export { app }
