@@ -1,10 +1,14 @@
-import { createConnection, getConnection } from 'typeorm'
+import { createConnection, getConnection, getConnectionOptions } from 'typeorm'
 import 'reflect-metadata'
 
 export async function getDBConnection () {
   try {
     return getConnection()
   } catch (e) {
-    return await createConnection()
+    const defaultOptions = await getConnectionOptions()
+
+    return await createConnection(Object.assign(defaultOptions, {
+      database: process.env.NODE_ENV === 'test' ? 'db_test.sqlite' : defaultOptions.database
+    }))
   }
 }
