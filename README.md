@@ -6,10 +6,13 @@ Backend of the Software Engineering II discipline project
 The following tools were used in the construction of the project:
 - [Node.js](https://nodejs.org/en/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Jest](https://jestjs.io/)
+- [Express](https://expressjs.com/)
+- [JWT](https://jwt.io/)
 
 # Prerequisites
 
-Before starting, you will need to have the following tools installed on your machine: [Git](https://git-scm.com), [Node.js](https://nodejs.org/en/). 
+Before starting, you will need to have the following tools installed on your machine: [Yarn](https://yarnpkg.com/), [Node.js](https://nodejs.org/en/). 
 
 # Useful commands
 
@@ -29,8 +32,6 @@ Start development server
 
     yarn dev
 
-The existing routes for CRUD operations:
-
 # Setting environment variables
 
 For the application to work, the environment variables must be correctly configured for your environment.
@@ -41,8 +42,11 @@ If you are running locally, you must have the local variable:
 If it's running in production, set the local variable to:
 
     TYPEORM_ENTITIES = dist/models/*.js
+    PORT = // Where express will run. By default is 3333
+    BCRYPT_SALT_ROUNDS = // How many iterations are used to generate the salt
+    JWT_SECRET_KEY = // Secrect key for JWT
 
-
+The existing routes for CRUD operations:
 # Contractors' Routes
 
 # `/login` POST method
