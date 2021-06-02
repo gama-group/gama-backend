@@ -580,7 +580,7 @@ describe('GET /contratante', () => {
   })
 
   it('shouldnt find someone', async () => {
-    const response = await request(app).get('/contratante?email=america@company.com')
+    const response = await request(app).get('/contratante?id=2')
     expect(response.body).toMatchObject({
       message: 'contractor not found'
     })
@@ -594,7 +594,7 @@ describe('GET /contratante', () => {
       trade_name: 'America',
       password: 'Cocorico123*'
     })
-    const response = await request(app).get('/contratante?email=america@company.com')
+    const response = await request(app).get('/contratante?id=1')
     expect(response.body).toMatchObject({
       message: 'Foi encontrado'
     })
@@ -632,7 +632,7 @@ describe('GET /contratante/todos', () => {
   })
 })
 
-describe('DELETE /contratante/:email', () => {
+describe('DELETE /contratante/:id', () => {
   beforeAll(async () => {
     connection = await getDBConnection()
   })
@@ -647,7 +647,7 @@ describe('DELETE /contratante/:email', () => {
     })
   })
   it('shouldnt allow removal because unauthorized acess', async () => {
-    const response = await request(app).delete('/contratante/america@company.com')
+    const response = await request(app).delete('/contratante/1')
 
     expect(response.body).toMatchObject({
       message: 'Unauthorized'
@@ -660,7 +660,7 @@ describe('DELETE /contratante/:email', () => {
       password: 'Cocorico123*'
     })
 
-    const response = await request(app).delete('/contratante/america@company.com').set('authorization', login.body.authorization)
+    const response = await request(app).delete('/contratante/2').set('authorization', login.body.authorization)
     expect(response.body).toMatchObject({
       message: 'Contractor not found'
     })
@@ -685,7 +685,7 @@ describe('DELETE /contratante/:email', () => {
       trade_name: 'AmaZon',
       password: 'Cocorico123*'
     })
-    const response = await request(app).delete('/contratante/america@company.com').set('authorization', login.body.authorization)
+    const response = await request(app).delete('/contratante/2').set('authorization', login.body.authorization)
     expect(response.body).toMatchObject({ message: 'Unauthorized' })
   })
 
@@ -708,7 +708,7 @@ describe('DELETE /contratante/:email', () => {
       trade_name: 'AmaZon',
       password: 'Cocorico123*'
     })
-    const response = await request(app).delete('/contratante/facebook@company.com').set('authorization', login.body.authorization)
+    const response = await request(app).delete('/contratante/1').set('authorization', login.body.authorization)
     expect(response.body).toMatchObject({ message: 'Foi Removido' })
   })
 })
@@ -740,7 +740,7 @@ describe('PUT /update', () => {
       password: 'Cocorico123*'
     })
 
-    const response = await request(app).put('/contratante/america@company.com').set('authorization', login.body.authorization).send({
+    const response = await request(app).put('/contratante/1').set('authorization', login.body.authorization).send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
       company_name: 'Americana',
@@ -759,7 +759,7 @@ describe('PUT /update', () => {
       password: 'Cocorico123*'
     })
 
-    const response = await request(app).put('/contratante/america@company.com').set('authorization', login.body.authorization).send({
+    const response = await request(app).put('/contratante/1').set('authorization', login.body.authorization).send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
       company_name: 'Americana',
@@ -778,7 +778,7 @@ describe('PUT /update', () => {
       password: 'Cocorico123*'
     })
 
-    const response = await request(app).put('/contratante/facebook@company.com').set('authorization', login.body.authorization).send({
+    const response = await request(app).put('/contratante/2').set('authorization', login.body.authorization).send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
       company_name: 'Americana',
@@ -792,7 +792,7 @@ describe('PUT /update', () => {
   })
 
   it('shouldnt update because unauthorized acess', async () => {
-    const response = await request(app).put('/contratante/america@company.com').send({
+    const response = await request(app).put('/contratante/1').send({
       email: 'americana@company.com.br',
       cnpj: '12345678900001',
       company_name: 'Americana',
@@ -810,7 +810,7 @@ describe('PUT /update', () => {
       password: 'Cocorico123*'
     })
 
-    const response = await request(app).put('/contratante/tesla@company.com').set('authorization', login.body.authorization).send({
+    const response = await request(app).put('/contratante/3').set('authorization', login.body.authorization).send({
       email: 'tesla.motors@company.com.br',
       cnpj: '12345678900001',
       company_name: 'Tesla Motors',
