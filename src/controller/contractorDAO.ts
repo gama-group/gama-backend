@@ -31,13 +31,28 @@ export class ContractorDAO {
     return contractor
   }
 
-  async findContractor (search: string):Promise<Contractor> {
+  async findContractor (id: Number):Promise<Contractor> {
     try {
       const connection = await getDBConnection()
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
-        .where('contractor.email = :email', { email: search })
+        .where('contractor.id = :id', { id: id })
+        .getOne()
+      return contractor
+    } catch (e) {
+      console.log('Error: Unable to find contractor.', e)
+      return undefined
+    }
+  }
+
+  async findContractorByEmail (email: string):Promise<Contractor> {
+    try {
+      const connection = await getDBConnection()
+      const contractor = await connection
+        .getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.email = :email', { email: email })
         .getOne()
       return contractor
     } catch (e) {
@@ -75,14 +90,14 @@ export class ContractorDAO {
     }
   }
 
-  async findAndDeleteContractor (search: string):Promise<Contractor> {
+  async findAndDeleteContractor (id: Number):Promise<Contractor> {
     try {
       const connection = await getDBConnection()
 
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
-        .where('contractor.email = :email', { email: search })
+        .where('contractor.id = :id', { id: id })
         .getOne()
 
       await connection.manager.remove(contractor)
@@ -94,14 +109,14 @@ export class ContractorDAO {
     }
   }
 
-  async updateContractor (searchEmail: string, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
+  async updateContractor (id: Number, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
     let connection
     try {
       connection = await getDBConnection()
       const contractor = await connection
         .getRepository(Contractor)
         .createQueryBuilder('contractor')
-        .where('contractor.email = :email', { email: searchEmail })
+        .where('contractor.id = :id', { id: id })
         .getOne()
 
       const pwHandler = new PasswordHandler()

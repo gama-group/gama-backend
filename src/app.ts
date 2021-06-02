@@ -52,16 +52,12 @@ app.post('/contratante', celebrate({
 
 app.get('/contratante', celebrate({
       [Segments.QUERY]: Joi.object().keys({
-        email: Joi.string().trim().email().required()
+        id: Joi.number().required()
       }),
   }), async (request, response) => {
-  const { email } = request.query
+  const { id } = request.query
 
-  if (typeof (email) !== 'string') {
-    return response.status(400).json({ 'bad request': 'email is not a string' })
-  }
-
-  const contractor = await connection.findContractor(email)
+  const contractor = await connection.findContractor(Number(id))
 
   if (contractor === undefined) {
     return response.status(404).json({ message: 'contractor not found' })
@@ -85,16 +81,16 @@ app.get('/contratante/todos', async (request, response) => {
 })
 
 app.use('/contratante', authMiddleware)
-app.delete('/contratante/:email', celebrate({
+app.delete('/contratante/:id', celebrate({
       [Segments.PARAMS]: Joi.object().keys({
-        email: Joi.string().trim().email().required()
+        id: Joi.number().required()
       }),
   }), async (request, response) => {
-  const { email } = request.params
-  let contractor = await connection.findContractor(email)
+  const { id } = request.params
+  let contractor = await connection.findContractor(Number(id))
   if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
   if (contractor.id !== response.locals.session.id) return unauthorized(response)
-  contractor = await connection.findAndDeleteContractor(email)
+  contractor = await connection.findAndDeleteContractor(Number(id))
 
   const json = {
     message: 'Foi Removido',
@@ -109,7 +105,7 @@ app.delete('/contratante/:email', celebrate({
 })
 
 app.use('/contratante', authMiddleware)
-app.put('/contratante/:searchEmail', celebrate({
+app.put('/contratante/:id', celebrate({
       [Segments.BODY]: Joi.object().keys({
         email: Joi.string().trim().email().required(),
         cnpj: Joi.string().min(14).max(14).pattern(/^[0-9]+$/).required(),
@@ -118,11 +114,11 @@ app.put('/contratante/:searchEmail', celebrate({
         password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
       }),
       [Segments.PARAMS]: Joi.object().keys({
-          searchEmail: Joi.string().trim().email().required()
+        id: Joi.number().required()
       })
   }), async (request, response) => {
-  const { searchEmail } = request.params
-  let contractor = await connection.findContractor(searchEmail)
+  const { id } = request.params
+  let contractor = await connection.findContractor(Number(id))
 
 
   if (!contractor) return response.status(404).json({ message: 'Contractor not found' })
@@ -134,7 +130,7 @@ app.put('/contratante/:searchEmail', celebrate({
       return response.status(403).json({message: 'Invalid email'})
   }
 
-  contractor = await connection.updateContractor(searchEmail, email, cnpj, companyName, tradeName, password)
+  contractor = await connection.updateContractor(Number(id), email, cnpj, companyName, tradeName, password)
 
 
   const json = {
@@ -333,7 +329,7 @@ app.post('/login', celebrate({
   if (!password) return response.status(400).json({ message: 'Password field is missing.' })
 
   const pwHandler = new PasswordHandler()
-  const contractor = await connection.findContractor(email)
+  const contractor = await connection.findContractorByEmail(email)
   // TODO: Hash password before comparing it
   if (!contractor || !(await pwHandler.authenticateContractor(password, contractor.password))) {
     return response.status(403).json({ message: 'Invalid username or password.' })
