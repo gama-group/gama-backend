@@ -2,6 +2,11 @@ name: CI
 on: push
 jobs:
   tests:
+    env:
+      TYPEORM_ENTITIES: src/models/*.ts
+      PORT: 3333
+      BCRYPT_SALT_ROUNDS: 10
+      JWT_SECRET_KEY: 12345467890
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
