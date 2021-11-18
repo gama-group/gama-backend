@@ -95,7 +95,7 @@ export class SelectiveProcessDao {
     }
   }
 
-  async deleteSelectiveProcessById (id: Number):Promise<SelectiveProcess> {
+  async deleteSelectiveProcessById (id: number):Promise<SelectiveProcess> {
     try {
       const connection = await getDBConnection()
 

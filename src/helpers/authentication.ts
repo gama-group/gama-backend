@@ -1,9 +1,9 @@
 import * as jwt from 'jsonwebtoken'
-import { Request, response, Response } from 'express'
+import { Request, Response } from 'express'
 
 interface ITokenUserData {
-    id: Number
-};
+    id: number
+}
 
 export const genUserToken = (data: ITokenUserData): string => {
   return jwt.sign(data, process.env.JWT_SECRET_KEY)
