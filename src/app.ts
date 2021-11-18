@@ -2,10 +2,8 @@ import express from 'express'
 import 'reflect-metadata'
 import { ContractorDAO } from './controller/contractorDAO'
 import { SelectiveProcessDao } from './controller/selective_processDAO'
-import { Contractor } from './models/contractor'
 import { genUserToken, authMiddleware, unauthorized } from './helpers/authentication'
 import { celebrate, Joi, errors, Segments } from 'celebrate'
-import { SelectiveProcess } from './models/selective_process'
 import { PasswordHandler } from './helpers/password_handler'
 import expressHumps from 'express-humps'
 import cors from 'cors'
@@ -32,7 +30,6 @@ app.post('/contratante', celebrate({
   const { email, cnpj, companyName, tradeName, password } = request.body
   
   const pwHandler = new PasswordHandler()
-  let passwordHashed = await pwHandler.hashNewPassword(password)
 
   let contractor = await connection.addContractor(email, cnpj, companyName, tradeName, password)
 
