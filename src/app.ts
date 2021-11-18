@@ -29,7 +29,7 @@ app.post('/contratante', celebrate({
   }), async (request, response) => {
   const { email, cnpj, companyName, tradeName, password } = request.body
   
-  let contractor = await connection.addContractor(email, cnpj, companyName, tradeName, password)
+  let contractor = await connection.addContractor(email, cnpj, tradeName, companyName, password)
 
   if (!contractor) return response.status(403).json({ message: 'Unable to create user.' })
 
@@ -127,7 +127,7 @@ app.put('/contratante/:id', celebrate({
       return response.status(403).json({message: 'Invalid email'})
   }
 
-  contractor = await connection.updateContractor(Number(id), email, cnpj, companyName, tradeName, password)
+  contractor = await connection.updateContractor(Number(id), email, cnpj, tradeName, companyName, password)
 
 
   const json = {
