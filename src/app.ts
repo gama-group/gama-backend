@@ -29,8 +29,6 @@ app.post('/contratante', celebrate({
   }), async (request, response) => {
   const { email, cnpj, companyName, tradeName, password } = request.body
   
-  const pwHandler = new PasswordHandler()
-
   let contractor = await connection.addContractor(email, cnpj, companyName, tradeName, password)
 
   if (!contractor) return response.status(403).json({ message: 'Unable to create user.' })
