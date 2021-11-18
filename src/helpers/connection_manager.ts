@@ -7,7 +7,7 @@ export async function getDBConnection () {
   } catch (e) {
     const defaultOptions = await getConnectionOptions()
 
-    return await createConnection(Object.assign(defaultOptions, {
+    return createConnection(Object.assign(defaultOptions, {
       database: process.env.NODE_ENV === 'test' ? 'db_test.sqlite' : defaultOptions.database
     }))
   }

@@ -6,7 +6,7 @@
   "author": "Daniel <daniel.lopes.santoss@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   },
   "scripts": {
     "start": "node dist/index.js",

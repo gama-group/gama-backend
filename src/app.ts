@@ -23,16 +23,18 @@ const connectionProcess = new SelectiveProcessDao()
 app.post('/contratante', celebrate({
       [Segments.BODY]: Joi.object().keys({
         email: Joi.string().trim().email().required(),
-        cnpj: Joi.string().min(14).max(14).pattern(/^[0-9]+$/).required(),
+        cnpj: Joi.string().min(14).max(14).pattern(/^\d+$/).required(),
         companyName: Joi.string().max(128).required(),
         tradeName: Joi.string().max(128).required(),
-        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
+        password: Joi.string().pattern(/^[a-zA-Z0-9!@#$%&*]{8,16}$/).required()
       }),
   }), async (request, response) => {
   const { email, cnpj, companyName, tradeName, password } = request.body
+  
+  const pwHandler = new PasswordHandler()
+  let passwordHashed = await pwHandler.hashNewPassword(password)
 
-  let contractor = new Contractor()
-  contractor = await connection.addContractor(email, cnpj, companyName, tradeName, password)
+  let contractor = await connection.addContractor(email, cnpj, companyName, tradeName, password)
 
   if (!contractor) return response.status(403).json({ message: 'Unable to create user.' })
 
@@ -108,10 +110,10 @@ app.use('/contratante', authMiddleware)
 app.put('/contratante/:id', celebrate({
       [Segments.BODY]: Joi.object().keys({
         email: Joi.string().trim().email().required(),
-        cnpj: Joi.string().min(14).max(14).pattern(/^[0-9]+$/).required(),
+        cnpj: Joi.string().min(14).max(14).pattern(/^\d+$/).required(),
         companyName: Joi.string().max(128).required(),
         tradeName: Joi.string().max(128).required(),
-        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
+        password: Joi.string().pattern(/^[a-zA-Z0-9!@#$%&*]{8,16}$/).required()
       }),
       [Segments.PARAMS]: Joi.object().keys({
         id: Joi.number().required()
@@ -206,17 +208,17 @@ app.get('/processo-seletivo/:id', celebrate({
       }),
   }), async (request, response) => {
   const { id } = request.params
-  const process = await connectionProcess.findSelectiveProcessOfContractorById(Number(id))
+  const processes = await connectionProcess.findSelectiveProcessOfContractorById(Number(id))
 
-  if (process === undefined) {
+  if (processes === undefined) {
     return response.json({ message: 'process not found' }) // create test
   }
 
-  for (let i = 0; i < process.length; i++) {
-    delete process[i].contractor
-  }
+  processes.forEach(process => {
+    delete process.contractor
+  })
 
-  return response.json(process)
+  return response.json(processes)
 })
 
 app.use('/processo-seletivo', authMiddleware)
@@ -231,8 +233,7 @@ app.post('/processo-seletivo', celebrate({
   const { title, description, deadline, methodOfContact } = request.body
 
   const contractorId = response.locals.session.id
-  let process = new SelectiveProcess()
-  process = await connectionProcess.addSelectiveProcess(title, description, deadline, methodOfContact, contractorId)
+  let process = await connectionProcess.addSelectiveProcess(title, description, deadline, methodOfContact, contractorId)
 
   if (process === undefined) {
     return response.json({ message: 'process not found' })// create test
@@ -321,7 +322,7 @@ app.put('/processo-seletivo/:id', celebrate({
 app.post('/login', celebrate({
       [Segments.BODY]: Joi.object().keys({
         email: Joi.string().trim().email().required(),
-        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%&*]{8,16}$')).required()
+        password: Joi.string().pattern(/^[a-zA-Z0-9!@#$%&*]{8,16}$/).required()
       }),
   }), async (request, response) => {
   const { email, password } = request.body
@@ -330,8 +331,13 @@ app.post('/login', celebrate({
 
   const pwHandler = new PasswordHandler()
   const contractor = await connection.findContractorByEmail(email)
-  // TODO: Hash password before comparing it
-  if (!contractor || !(await pwHandler.authenticateContractor(password, contractor.password))) {
+  
+  if (!contractor || 
+      !(await pwHandler.authenticateContractor(
+          password, 
+          contractor.password)
+        )
+      ) {
     return response.status(403).json({ message: 'Invalid username or password.' })
   }
 

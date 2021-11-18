@@ -16,5 +16,5 @@ module.exports = {
     process.env.TYPEORM_ENTITIES
   ],
   keepConnectionAlive: true,
-  synchronize: true
+  synchronize: true,
 }
