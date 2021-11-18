@@ -31,7 +31,7 @@ export class ContractorDAO {
     return contractor
   }
 
-  async findContractor (id: Number):Promise<Contractor> {
+  async findContractor (id: number):Promise<Contractor> {
     try {
       const connection = await getDBConnection()
       const contractor = await connection
@@ -90,7 +90,7 @@ export class ContractorDAO {
     }
   }
 
-  async findAndDeleteContractor (id: Number):Promise<Contractor> {
+  async findAndDeleteContractor (id: number):Promise<Contractor> {
     try {
       const connection = await getDBConnection()
 
@@ -109,7 +109,7 @@ export class ContractorDAO {
     }
   }
 
-  async updateContractor (id: Number, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
+  async updateContractor (id: number, email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
     let connection
     try {
       connection = await getDBConnection()
