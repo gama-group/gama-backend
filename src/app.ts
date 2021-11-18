@@ -8,10 +8,14 @@ import { PasswordHandler } from './helpers/password_handler'
 import expressHumps from 'express-humps'
 import cors from 'cors'
 
+let corsOptions = {
+  origin: process.env.ACCEPTED_URL
+}
+
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(expressHumps())
 
 
