@@ -30,6 +30,16 @@ export class Contractor {
     })
     cnpj: string;
 
+    @Column({
+      default: 0
+    })
+    twoStepEnabled: boolean;
+
+    @Column({
+      nullable: true
+    })
+    token: string;
+
     @OneToMany(() => SelectiveProcess, process => process.contractor)
     processes: SelectiveProcess[];
 }

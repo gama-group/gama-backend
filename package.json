@@ -47,6 +47,7 @@
     "@types/jsonwebtoken": "^8.5.1",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
     "celebrate": "^14.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -54,9 +55,11 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
+    "speakeasy": "^2.0.0",
     "sqlite3": "^5.0.2",
     "supertest": "^6.1.3",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.32",
+    "uuid": "^8.3.2"
   },
   "jest": {
     "setupFiles": [

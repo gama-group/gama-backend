@@ -70,7 +70,8 @@ app.get('/contratante', celebrate({
     password: contractor.password,
     cnpj: contractor.cnpj,
     companyName: contractor.companyName,
-    tradeName: contractor.tradeName
+    tradeName: contractor.tradeName,
+    twoStepValidation: contractor.twoStepEnabled
   }
 
   return response.json(json)
@@ -145,6 +146,46 @@ app.put('/contratante/:id', celebrate({
   }
 
   return response.json(json)
+})
+
+app.use('/contratante', authMiddleware)
+app.put('/contratante/ativarduasetapas/:id', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  })
+}), async(request, response) => {
+  const { id } = request.params
+
+  let contractor = await connection.findContractor(Number(id))
+  if(!contractor) return response.status(400).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
+  
+  let token: string = await connection
+    .activateTwoStepVerification(contractor.id)
+
+  return response.json(token)
+})
+
+app.use('/contratante', authMiddleware)
+app.get('/contratante/validartoken/:id', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  }),
+  [Segments.BODY]: Joi.object().keys({
+    token: Joi.number().required()
+  })
+}), async(request, response) => {
+  const { id } = request.params
+  const { token } = request.body
+
+  let contractor = await connection.findContractor(Number(id))
+  if(!contractor) return response.status(400).json({ message: 'Contractor not found' })
+  if (contractor.id !== response.locals.session.id) return unauthorized(response)
+  console.log(token)
+  const verified = await connection
+    .validateToken(contractor.id, token)
+  
+  return response.json(verified)
 })
 
 app.get('/processo-seletivo/todos', async (request, response) => {

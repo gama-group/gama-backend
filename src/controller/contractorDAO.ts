@@ -2,6 +2,7 @@ import { Contractor } from '../models/contractor'
 import { PasswordHandler } from '../helpers/password_handler'
 import 'reflect-metadata'
 import { getDBConnection } from '../helpers/connection_manager'
+const speakeasy = require('speakeasy')
 
 export class ContractorDAO {
   async addContractor (email: string, cnpj: string, tradeName: string, companyName: string, password: string):Promise<Contractor> {
@@ -105,6 +106,63 @@ export class ContractorDAO {
       return contractor
     } catch (e) {
       console.log('Unable to find and delete contractor', e)
+      return undefined
+    }
+  }
+
+  async activateTwoStepVerification (id: number):Promise<string> {
+    try {
+      const connection = await getDBConnection()
+
+      const contractor = await connection
+        .getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.id = :id', { id: id })
+        .getOne()
+
+      let token = speakeasy.generateSecret()
+
+      contractor.token = token.base32
+      contractor.twoStepEnabled = true
+
+      await connection.manager.getRepository(Contractor).save(contractor)
+
+      return token.base32
+      
+    } catch (error) {
+      console.log('Error while trying to activate two step verification', error)
+      return undefined
+    }
+  }
+
+  async validateToken (id: number, token: string):Promise<boolean> {
+    try {
+      const connection = await getDBConnection()
+
+      const contractor = await connection
+        .getRepository(Contractor)
+        .createQueryBuilder('contractor')
+        .where('contractor.id = :id', { id : id })
+        .getOne()
+      
+      let tokenSecret = contractor.token
+      
+      const verified: boolean = speakeasy.totp.verify({ 
+        secret: tokenSecret,
+        encoding: 'base32',
+        token: token,
+        window: 1        
+      })
+
+      if(verified && contractor.twoStepEnabled){
+          contractor.twoStepEnabled = true;
+          connection.manager.getRepository(Contractor).save(contractor)
+      }
+
+      return verified
+
+    } catch (error) {
+      console.log('Error while trying to validate the token', error)
       return undefined
     }
   }
