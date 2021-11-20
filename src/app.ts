@@ -7,6 +7,8 @@ import { celebrate, Joi, errors, Segments } from 'celebrate'
 import { PasswordHandler } from './helpers/password_handler'
 import expressHumps from 'express-humps'
 import cors from 'cors'
+import { Contractor } from './models/contractor'
+import { validate } from '@babel/types'
 
 let corsOptions = {
   origin: process.env.ACCEPTED_URL
@@ -361,11 +363,11 @@ app.put('/processo-seletivo/:id', celebrate({
 })
 
 app.post('/login', celebrate({
-      [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().trim().email().required(),
-        password: Joi.string().pattern(/^[a-zA-Z0-9!@#$%&*]{8,16}$/).required()
-      }),
-  }), async (request, response) => {
+  [Segments.BODY]: Joi.object().keys({
+    email: Joi.string().trim().email().required(),
+    password: Joi.string().pattern(/^[a-zA-Z0-9!@#$%&*]{8,16}$/).required()
+  }),
+}), async (request, response) => {
   const { email, password } = request.body
   if (!email) return response.status(400).json({ message: 'Email field is missing.' })
   if (!password) return response.status(400).json({ message: 'Password field is missing.' })
@@ -382,7 +384,31 @@ app.post('/login', celebrate({
     return response.status(403).json({ message: 'Invalid username or password.' })
   }
 
-  return response.json({ authorization: genUserToken({ id: contractor.id }) })
+  if(contractor.twoStepEnabled)
+    return response.json({ twoStepEnabled: true, usuarioId: contractor.id })
+  
+  return response.json({ twoStepEnabled: false, authorization: genUserToken({ id: contractor.id }) })
+})
+
+app.get('/login/validartoken', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    id: Joi.number().required(),
+    token: Joi.number().required()
+  })
+}), async(request, response) => {
+  const { id, token } = request.body
+
+  let contractor: Contractor = await connection.findContractor(id)
+
+  if(!contractor)
+    return response.status(403).json({ message: 'Invalid user '})
+  
+  let validated: boolean = await connection.validateToken(id, token)
+
+  if(validated)
+    return response.json({ authorization: genUserToken({ id: contractor.id }) })
+  else
+    return response.status(403).json({ message: 'Invalid token' })
 })
 
 app.use(errors())
