@@ -8,7 +8,6 @@ import { PasswordHandler } from './helpers/password_handler'
 import expressHumps from 'express-humps'
 import cors from 'cors'
 import { Contractor } from './models/contractor'
-import { validate } from '@babel/types'
 
 let corsOptions = {
   origin: process.env.ACCEPTED_URL
