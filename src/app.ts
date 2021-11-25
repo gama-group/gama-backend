@@ -401,14 +401,14 @@ app.get('/login/validartoken', celebrate({
   let contractor: Contractor = await connection.findContractor(id)
 
   if(!contractor)
-    return response.status(403).json({ message: 'Invalid user '})
+    return response.status(403).json({ message: 'Invalid user.'})
   
   let validated: boolean = await connection.validateToken(id, token)
 
   if(validated)
     return response.json({ authorization: genUserToken({ id: contractor.id }) })
   else
-    return response.status(403).json({ message: 'Invalid token' })
+    return response.status(403).json({ message: 'Invalid token.' })
 })
 
 app.use(errors())
