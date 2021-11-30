@@ -114,34 +114,4 @@ export class SelectiveProcessDao {
     }
   }
 
-  async updateSelectiveProcess (searchId: number, title: string, description: string, deadline: string, methodOfContact: string, contractorId: string) {
-    try {
-      const connection = await getDBConnection()
-
-      const process = await connection
-        .getRepository(SelectiveProcess)
-        .createQueryBuilder('process')
-        .leftJoinAndSelect('process.contractor', 'contractor')
-        .where('process.id = :id', { id: searchId })
-        .getOne()
-
-      const contractor = await connection
-        .getRepository(Contractor)
-        .createQueryBuilder('contractor')
-        .where('contractor.id=:id', { id: contractorId })
-        .getOne()
-
-      process.title = title
-      process.description = description
-      process.deadline = deadline
-      process.methodOfContact = methodOfContact
-      process.contractor = contractor
-
-      await connection.manager.getRepository(SelectiveProcess).save(process)
-      return process
-    } catch (e) {
-      console.log('Unable to update selective process', e)
-      return undefined
-    }
-  }
 }

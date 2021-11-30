@@ -321,46 +321,6 @@ app.delete('/processo-seletivo/:id', celebrate({
   return response.json(json)
 })
 
-app.use('/processo-seletivo', authMiddleware)
-app.put('/processo-seletivo/:id', celebrate({
-      [Segments.BODY]: Joi.object().keys({
-        title: Joi.string().max(128).required(),
-        description: Joi.string().max(128).required(),
-        deadline: Joi.string().required(),
-        methodOfContact: Joi.string().max(64).required()
-      }),
-      [Segments.PARAMS]: Joi.object().keys({
-          id: Joi.number().required()
-      })
-  }), async (request, response) => {
-  const { id } = request.params
-  const { title, description, deadline, methodOfContact } = request.body
-
-  const contractorId = response.locals.session.id
-  const contractor = await connection.findContractorById(contractorId)
-  let process = await connectionProcess.findSelectiveProcessById(Number(id))
-
-  if (process === undefined) {
-    return response.json({ message: 'process not found' })
-  }
-
-  if (!contractor || process.contractor.id !== contractor.id) return response.status(404).json({ message: 'Invalid contractor.' })
-
-  process = await connectionProcess.updateSelectiveProcess(Number(id), title, description, deadline, methodOfContact, contractorId)
-
-  const json = {
-    message: 'Foi atualizado',
-    id: process.id,
-    title: process.title,
-    description: process.description,
-    methodOfContact: process.methodOfContact,
-    deadline: process.deadline,
-    id_contractor: process.contractor.id
-  }
-
-  return response.json(json)
-})
-
 app.post('/login', celebrate({
   [Segments.BODY]: Joi.object().keys({
     email: Joi.string().trim().email().required(),
